@@ -1096,7 +1096,12 @@ namespace ExcelMerge.GUI.Views
 
         private void UseAnother_Click(object sender, RoutedEventArgs e)
         {
-            CopyToClipboardSelectedCells(",");
+            var s = SrcDataGrid.CurrentCell;
+            var t = DstDataGrid.CurrentCell;
+
+            var st = (SrcDataGrid.Model as DiffGridModel).GetCellText(s.Row.Value, s.Column.Value);
+            var tt = (DstDataGrid.Model as DiffGridModel).GetCellText(t.Row.Value, t.Column.Value);
+            // CopyToClipboardSelectedCells(",");
         }
     }
 }
