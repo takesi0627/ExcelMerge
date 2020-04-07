@@ -1093,5 +1093,10 @@ namespace ExcelMerge.GUI.Views
         {
             CopyToClipboardSelectedCells(",");
         }
+
+        private void UseAnother_Click(object sender, RoutedEventArgs e)
+        {
+            CopyToClipboardSelectedCells(",");
+        }
     }
 }
