@@ -29,6 +29,9 @@ namespace ExcelMerge.GUI.Views
 
         private FastGridControl copyTargetGrid;
 
+        private ExcelSheet SourceSheet;
+        private ExcelSheet DestSheet;
+
         public DiffView()
         {
             InitializeComponent();
@@ -451,6 +454,9 @@ namespace ExcelMerge.GUI.Views
 
             var srcSheet = srcWorkbook.Sheets[SrcSheetCombobox.SelectedItem.ToString()];
             var dstSheet = dstWorkbook.Sheets[DstSheetCombobox.SelectedItem.ToString()];
+
+            SourceSheet = srcSheet;
+            DestSheet = dstSheet;
 
             if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
                 MessageBox.Show(Properties.Resources.Msg_WarnSize);
@@ -1101,6 +1107,8 @@ namespace ExcelMerge.GUI.Views
 
             var st = (SrcDataGrid.Model as DiffGridModel).GetCellText(s.Row.Value, s.Column.Value);
             var tt = (DstDataGrid.Model as DiffGridModel).GetCellText(t.Row.Value, t.Column.Value);
+
+            // SourceSheet.
             // CopyToClipboardSelectedCells(",");
         }
     }
