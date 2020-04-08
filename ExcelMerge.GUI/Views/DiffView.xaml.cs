@@ -33,6 +33,9 @@ namespace ExcelMerge.GUI.Views
         private ExcelSheet SourceSheet;
         private ExcelSheet DestSheet;
 
+        private ExcelWorkbook LeftWorkbook;
+        private ExcelWorkbook RightWorkbook;
+
         public DiffView()
         {
             InitializeComponent();
@@ -456,6 +459,9 @@ namespace ExcelMerge.GUI.Views
 
             SourceSheet = srcSheet;
             DestSheet = dstSheet;
+
+            LeftWorkbook = srcWorkbook;
+            RightWorkbook = dstWorkbook;
 
             RefreshBySheet(isStartup);
             
@@ -1115,7 +1121,10 @@ namespace ExcelMerge.GUI.Views
 
         private void CopyAsCsv_Click(object sender, RoutedEventArgs e)
         {
-            CopyToClipboardSelectedCells(",");
+            // 后续先用这里作为保存入口
+            // CopyToClipboardSelectedCells(",");
+            LeftWorkbook.Dump();
+            RightWorkbook.Dump();
         }
 
         private void UseAnother_Click(object sender, RoutedEventArgs e)
