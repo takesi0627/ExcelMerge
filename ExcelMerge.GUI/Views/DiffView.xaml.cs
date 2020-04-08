@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -445,9 +446,7 @@ namespace ExcelMerge.GUI.Views
             var srcWorkbook = workbooks.Item1;
             var dstWorkbook = workbooks.Item2;
 
-            var fileSettings = FindFileSettings(isStartup);
-            var srcFileSetting = fileSettings.Item1;
-            var dstFileSetting = fileSettings.Item2;
+
 
             SrcSheetCombobox.SelectedIndex = diffConfig.SrcSheetIndex;
             DstSheetCombobox.SelectedIndex = diffConfig.DstSheetIndex;
@@ -458,6 +457,15 @@ namespace ExcelMerge.GUI.Views
             SourceSheet = srcSheet;
             DestSheet = dstSheet;
 
+            RefreshBySheet(isStartup);
+            
+        }
+
+        private void RefreshBySheet(bool isStartup, bool edit = false)
+        {
+            var srcSheet = SourceSheet;
+            var dstSheet = DestSheet;
+
             if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
                 MessageBox.Show(Properties.Resources.Msg_WarnSize);
 
@@ -465,24 +473,34 @@ namespace ExcelMerge.GUI.Views
             SrcDataGrid.Model = new DiffGridModel(diff, DiffType.Source);
             DstDataGrid.Model = new DiffGridModel(diff, DiffType.Dest);
 
-            args = new DiffViewEventArgs<FastGridControl>(SrcDataGrid, container);
-            DataGridEventDispatcher.Instance.DispatchFileSettingUpdateEvent(args, srcFileSetting);
+            var fileSettings = FindFileSettings(isStartup);
+            var srcFileSetting = fileSettings.Item1;
+            var dstFileSetting = fileSettings.Item2;
 
-            args = new DiffViewEventArgs<FastGridControl>(DstDataGrid, container);
-            DataGridEventDispatcher.Instance.DispatchFileSettingUpdateEvent(args, dstFileSetting);
+            var args1 = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
 
-            args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
-            DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, ShowOnlyDiffRadioButton.IsChecked.Value);
-            DataGridEventDispatcher.Instance.DispatchPostExecuteDiffEvent(args);
+            if (!edit)
+            {
+                var args = new DiffViewEventArgs<FastGridControl>(SrcDataGrid, container);
+                DataGridEventDispatcher.Instance.DispatchFileSettingUpdateEvent(args, srcFileSetting);
 
-            var summary = diff.CreateSummary();
-            GetViewModel().UpdateDiffSummary(summary);
+                args = new DiffViewEventArgs<FastGridControl>(DstDataGrid, container);
+                DataGridEventDispatcher.Instance.DispatchFileSettingUpdateEvent(args, dstFileSetting);
+
+
+                DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args1, ShowOnlyDiffRadioButton.IsChecked.Value);
+                DataGridEventDispatcher.Instance.DispatchPostExecuteDiffEvent(args1);
+
+                var summary = diff.CreateSummary();
+                GetViewModel().UpdateDiffSummary(summary);
+
+                if (App.Instance.Setting.NotifyEqual && !summary.HasDiff)
+                    MessageBox.Show(Properties.Resources.Message_NoDiff);
+            }
+
 
             if (!App.Instance.KeepFileHistory)
                 App.Instance.UpdateRecentFiles(SrcPathTextBox.Text, DstPathTextBox.Text);
-
-            if (App.Instance.Setting.NotifyEqual && !summary.HasDiff)
-                MessageBox.Show(Properties.Resources.Message_NoDiff);
 
             if (App.Instance.Setting.FocusFirstDiff)
                 MoveNextModifiedCell();
@@ -1105,11 +1123,41 @@ namespace ExcelMerge.GUI.Views
             var s = SrcDataGrid.CurrentCell;
             var t = DstDataGrid.CurrentCell;
 
+            int row = s.Row.Value;
+            int col = t.Column.Value;
+
             var st = (SrcDataGrid.Model as DiffGridModel).GetCellText(s.Row.Value, s.Column.Value);
             var tt = (DstDataGrid.Model as DiffGridModel).GetCellText(t.Row.Value, t.Column.Value);
 
-            // SourceSheet.
-            // CopyToClipboardSelectedCells(",");
+            DiffType diffType = DiffType.Source;
+
+            var menuItem = sender as MenuItem;
+            if (menuItem != null)
+            {
+                var dataGrid = ((ContextMenu)menuItem.Parent).PlacementTarget as FastGridControl;
+                if (dataGrid != null)
+                {
+                    diffType = (dataGrid.Model as DiffGridModel).DiffType;
+                    // var args = new DiffViewEventArgs<FastGridControl>(dataGrid, container, TargetType.First);
+                    // DataGridEventDispatcher.Instance.DispatchRowHeaderChagneEvent(args);
+                }
+            }
+
+            if (diffType == DiffType.Source)
+            {
+                SourceSheet.SetCell(row, col, tt);
+            }
+            else
+            {
+                DestSheet.SetCell(row, col, st);
+            }
+
+            
+
+            RefreshBySheet(false, true);
+
+            UpdateLayout();
+
         }
     }
 }

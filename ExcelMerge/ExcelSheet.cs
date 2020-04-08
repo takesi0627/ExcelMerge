@@ -56,6 +56,11 @@ namespace ExcelMerge
             return sheet;
         }
 
+        public void SetCell(int row, int col, string value)
+        {
+            Rows[row].Cells[col].Value = value;
+        }
+
         public void TrimFirstBlankRows()
         {
             var rows = new SortedDictionary<int, ExcelRow>();

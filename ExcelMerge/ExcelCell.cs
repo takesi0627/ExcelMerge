@@ -2,7 +2,7 @@
 {
     public class ExcelCell
     {
-        public string Value { get; private set; }
+        public string Value { get; set; }
         public int OriginalColumnIndex { get; private set; }
         public int OriginalRowIndex { get; private set; }
 
