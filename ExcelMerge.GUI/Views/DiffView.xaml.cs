@@ -1116,7 +1116,10 @@ namespace ExcelMerge.GUI.Views
 
         private void CopyAsTsv_Click(object sender, RoutedEventArgs e)
         {
-            CopyToClipboardSelectedCells("\t");
+            // CopyToClipboardSelectedCells("\t");
+            // 这里用来测试各种方法
+            LeftWorkbook.DumpByCreate();
+
         }
 
         private void CopyAsCsv_Click(object sender, RoutedEventArgs e)
@@ -1129,43 +1132,37 @@ namespace ExcelMerge.GUI.Views
 
         private void UseAnother_Click(object sender, RoutedEventArgs e)
         {
-            var s = SrcDataGrid.CurrentCell;
-            var t = DstDataGrid.CurrentCell;
 
-            int row = s.Row.Value;
-            int col = t.Column.Value;
-
-            var st = (SrcDataGrid.Model as DiffGridModel).GetCellText(s.Row.Value, s.Column.Value);
-            var tt = (DstDataGrid.Model as DiffGridModel).GetCellText(t.Row.Value, t.Column.Value);
-
-            DiffType diffType = DiffType.Source;
+            FastGridControl selectGridControl = null;
 
             var menuItem = sender as MenuItem;
             if (menuItem != null)
             {
-                var dataGrid = ((ContextMenu)menuItem.Parent).PlacementTarget as FastGridControl;
-                if (dataGrid != null)
+                selectGridControl = ((ContextMenu)menuItem.Parent).PlacementTarget as FastGridControl;
+            }
+
+            if (selectGridControl != null)
+            {
+                int? row = selectGridControl.CurrentRow;
+                int? col = selectGridControl.CurrentColumn;
+                var diffType = (selectGridControl.Model as DiffGridModel).DiffType;
+
+                var leftText = (SrcDataGrid.Model as DiffGridModel).GetCellText(row.Value, col.Value);
+                var rightText = (DstDataGrid.Model as DiffGridModel).GetCellText(row.Value, col.Value);
+
+                if (diffType == DiffType.Source)
                 {
-                    diffType = (dataGrid.Model as DiffGridModel).DiffType;
-                    // var args = new DiffViewEventArgs<FastGridControl>(dataGrid, container, TargetType.First);
-                    // DataGridEventDispatcher.Instance.DispatchRowHeaderChagneEvent(args);
+                    SourceSheet.SetCell(row.Value, col.Value, rightText);
                 }
+                else
+                {
+                    DestSheet.SetCell(row.Value, col.Value, leftText);
+                }
+
+                RefreshBySheet(false, true);
+
+                UpdateLayout();
             }
-
-            if (diffType == DiffType.Source)
-            {
-                SourceSheet.SetCell(row, col, tt);
-            }
-            else
-            {
-                DestSheet.SetCell(row, col, st);
-            }
-
-            
-
-            RefreshBySheet(false, true);
-
-            UpdateLayout();
 
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -50,6 +51,52 @@ namespace ExcelMerge
             }
 
             return wb;
+        }
+
+        public void DumpByCreate()
+        {
+            // 尝试直接通过封装的数据来创建出原始 excel 表，比较冒险，可能有缺少的内容导致写入的 excel 错误
+            // 但是这样写入成功之后，界面操作修改都会变得简单
+            var wb = new XSSFWorkbook();
+
+            foreach (var sheetName in SheetNames)
+            {
+                var table = wb.CreateSheet(sheetName);
+
+                var sheetWrap = Sheets[sheetName];
+
+                foreach (var rowWrap in sheetWrap.Rows)
+                {
+                    var row = table.CreateRow(rowWrap.Key);
+
+                    // if (row is null)
+                    // {
+                    //     break;
+                    // }
+
+                    var i = 0;
+                    foreach (var cellWrap in rowWrap.Value.Cells)
+                    {
+                        var cell = row.CreateCell(i);
+                        // var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+                        XSSFCellStyle cellstyle = wb.CreateCellStyle() as XSSFCellStyle;
+                        if (cellWrap.OriginalCellStyle != null)
+                        {
+                            cellstyle.CloneStyleFrom(cellWrap.OriginalCellStyle);
+                        }
+                        
+                        cell.CellStyle = cellstyle;
+                        cell.SetCellValue(cellWrap.Value);
+                        i++;
+                    }
+                }
+            }
+
+            using (FileStream stream = new FileStream(@"D:/test.xlsx", FileMode.Create, FileAccess.Write))
+            {
+                wb.Write(stream);
+            }
         }
 
         public void Dump()
