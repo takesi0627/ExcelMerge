@@ -135,6 +135,7 @@ namespace ExcelMerge
             option.EqualityComparer =
                 new RowComparer(new HashSet<int>(columnStatusMap.Where(i => i.Value != ExcelColumnStatus.None).Select(i => i.Key)));
 
+            // 这里实际上计算的是有没有插入新列
             foreach (var row in src.Rows.Values)
             {
                 var shifted = new List<ExcelCell>();

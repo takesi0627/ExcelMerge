@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NetDiff;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -99,33 +100,35 @@ namespace ExcelMerge
             }
         }
 
-        public void Dump()
+        public void Dump(string sheetName, ExcelSheetDiff sheetDiff)
         {
             var workbook = rawWorkbook;
 
-            foreach (var sheetName in SheetNames)
+            var table = workbook.GetSheet(sheetName);
+
+            var sheetWrap = Sheets[sheetName];
+
+            foreach (KeyValuePair<int, ExcelRowDiff> sheetDiffRow in sheetDiff.Rows)
             {
-                var table = workbook.GetSheet(sheetName);
 
-                var sheetWrap = Sheets[sheetName];
+            }
 
-                foreach (var rowWrap in sheetWrap.Rows)
+            foreach (var rowWrap in sheetWrap.Rows)
+            {
+                var row = table.GetRow(rowWrap.Key);
+
+                if (row is null)
                 {
-                    var row = table.GetRow(rowWrap.Key);
+                    break;
+                }
 
-                    if (row is null)
-                    {
-                        break;
-                    }
+                var i = 0;
+                foreach (var cellWrap in rowWrap.Value.Cells)
+                {
+                    var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
 
-                    var i = 0;
-                    foreach (var cellWrap in rowWrap.Value.Cells)
-                    {
-                        var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-
-                        cell.SetCellValue(cellWrap.Value);
-                        i++;
-                    }
+                    cell.SetCellValue(cellWrap.Value);
+                    i++;
                 }
             }
 
@@ -134,11 +137,6 @@ namespace ExcelMerge
                 workbook.Write(stream);
             }
 
-            // using (var fs = File.OpenWrite(@"D:/test.xlsx"))
-            // {
-            //     workbook.Write(fs);   //向打开的这个xls文件中写入mySheet表并保存。
-            //     Console.WriteLine("生成成功");
-            // }
         }
 
         public static IEnumerable<string> GetSheetNames(string path)

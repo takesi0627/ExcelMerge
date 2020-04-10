@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
@@ -18,6 +19,7 @@ using ExcelMerge.GUI.ViewModels;
 using ExcelMerge.GUI.Settings;
 using ExcelMerge.GUI.Models;
 using ExcelMerge.GUI.Styles;
+using System.Diagnostics;
 
 namespace ExcelMerge.GUI.Views
 {
@@ -35,6 +37,9 @@ namespace ExcelMerge.GUI.Views
 
         private ExcelWorkbook LeftWorkbook;
         private ExcelWorkbook RightWorkbook;
+
+        private string SheetName;
+        private ExcelSheetDiff SheetDiff;
 
         public DiffView()
         {
@@ -449,13 +454,15 @@ namespace ExcelMerge.GUI.Views
             var srcWorkbook = workbooks.Item1;
             var dstWorkbook = workbooks.Item2;
 
-
-
             SrcSheetCombobox.SelectedIndex = diffConfig.SrcSheetIndex;
             DstSheetCombobox.SelectedIndex = diffConfig.DstSheetIndex;
 
-            var srcSheet = srcWorkbook.Sheets[SrcSheetCombobox.SelectedItem.ToString()];
-            var dstSheet = dstWorkbook.Sheets[DstSheetCombobox.SelectedItem.ToString()];
+            SheetName = SrcSheetCombobox.SelectedItem.ToString();
+
+            Debug.Assert(SheetName == DstSheetCombobox.SelectedItem.ToString());
+
+            var srcSheet = srcWorkbook.Sheets[SheetName];
+            var dstSheet = dstWorkbook.Sheets[SheetName];
 
             SourceSheet = srcSheet;
             DestSheet = dstSheet;
@@ -463,21 +470,21 @@ namespace ExcelMerge.GUI.Views
             LeftWorkbook = srcWorkbook;
             RightWorkbook = dstWorkbook;
 
+            if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
+                MessageBox.Show(Properties.Resources.Msg_WarnSize);
+
+            var diff = ExecuteDiff(srcSheet, dstSheet);
+            SheetDiff = diff;
+
             RefreshBySheet(isStartup);
             
         }
 
         private void RefreshBySheet(bool isStartup, bool edit = false)
         {
-            var srcSheet = SourceSheet;
-            var dstSheet = DestSheet;
 
-            if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
-                MessageBox.Show(Properties.Resources.Msg_WarnSize);
-
-            var diff = ExecuteDiff(srcSheet, dstSheet);
-            SrcDataGrid.Model = new DiffGridModel(diff, DiffType.Source);
-            DstDataGrid.Model = new DiffGridModel(diff, DiffType.Dest);
+            SrcDataGrid.Model = new DiffGridModel(SheetDiff, DiffType.Source);
+            DstDataGrid.Model = new DiffGridModel(SheetDiff, DiffType.Dest);
 
             var fileSettings = FindFileSettings(isStartup);
             var srcFileSetting = fileSettings.Item1;
@@ -497,7 +504,7 @@ namespace ExcelMerge.GUI.Views
                 DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args1, ShowOnlyDiffRadioButton.IsChecked.Value);
                 DataGridEventDispatcher.Instance.DispatchPostExecuteDiffEvent(args1);
 
-                var summary = diff.CreateSummary();
+                var summary = SheetDiff.CreateSummary();
                 GetViewModel().UpdateDiffSummary(summary);
 
                 if (App.Instance.Setting.NotifyEqual && !summary.HasDiff)
@@ -1126,8 +1133,8 @@ namespace ExcelMerge.GUI.Views
         {
             // 后续先用这里作为保存入口
             // CopyToClipboardSelectedCells(",");
-            LeftWorkbook.Dump();
-            RightWorkbook.Dump();
+            LeftWorkbook.Dump(SheetName, SheetDiff);
+            RightWorkbook.Dump(SheetName, SheetDiff);
         }
 
         private void UseAnother_Click(object sender, RoutedEventArgs e)
@@ -1145,21 +1152,22 @@ namespace ExcelMerge.GUI.Views
             {
                 int? row = selectGridControl.CurrentRow;
                 int? col = selectGridControl.CurrentColumn;
+
                 var diffType = (selectGridControl.Model as DiffGridModel).DiffType;
 
-                var leftText = (SrcDataGrid.Model as DiffGridModel).GetCellText(row.Value, col.Value);
-                var rightText = (DstDataGrid.Model as DiffGridModel).GetCellText(row.Value, col.Value);
+                var diffCell = SheetDiff.Rows[row.Value].Cells[col.Value];
 
                 if (diffType == DiffType.Source)
                 {
-                    SourceSheet.SetCell(row.Value, col.Value, rightText);
+                    diffCell.SrcCell.Value = diffCell.DstCell.Value;
                 }
                 else
                 {
-                    DestSheet.SetCell(row.Value, col.Value, leftText);
+                    diffCell.DstCell.Value = diffCell.SrcCell.Value;
                 }
 
                 RefreshBySheet(false, true);
+
 
                 UpdateLayout();
             }
