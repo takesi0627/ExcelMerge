@@ -8,6 +8,38 @@ namespace ExcelMerge
 {
     public class ExcelUtility
     {
+
+        public static void RemoveEmptyRows(ISheet sheet)
+        {
+            bool isRowEmpty = false;
+            for (int i = 0; i <= sheet.LastRowNum; i++)
+            {
+                if (sheet.GetRow(i) == null)
+                {
+                    isRowEmpty = true;
+                    sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
+                    i--;
+                    continue;
+                }
+                for (int j = 0; j < sheet.GetRow(i).LastCellNum; j++)
+                {
+                    if (sheet.GetRow(i).GetCell(j) == null || GetCellStringValue(sheet.GetRow(i).GetCell(j)) == string.Empty)
+                    {
+                        isRowEmpty = true;
+                    }
+                    else
+                    {
+                        isRowEmpty = false;
+                        break;
+                    }
+                }
+                if (isRowEmpty == true)
+                {
+                    sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
+                    i--;
+                }
+            }
+        }
         public static object GetCellValue(ICell cell)
         {
             if (cell == null)

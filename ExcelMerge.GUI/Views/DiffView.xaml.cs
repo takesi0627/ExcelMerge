@@ -1125,7 +1125,7 @@ namespace ExcelMerge.GUI.Views
         {
             // CopyToClipboardSelectedCells("\t");
             // 这里用来测试各种方法
-            LeftWorkbook.DumpByCreate();
+            // LeftWorkbook.DumpByCreate();
 
         }
 
@@ -1133,11 +1133,11 @@ namespace ExcelMerge.GUI.Views
         {
             // 后续先用这里作为保存入口
             // CopyToClipboardSelectedCells(",");
-            LeftWorkbook.Dump(SheetName, SheetDiff);
-            RightWorkbook.Dump(SheetName, SheetDiff);
+            LeftWorkbook.Dump(SheetName, SheetDiff, true);
+            RightWorkbook.Dump(SheetName, SheetDiff, false);
         }
 
-        private void UseAnother_Click(object sender, RoutedEventArgs e)
+        private void CopyToAnother_Click(object sender, RoutedEventArgs e)
         {
 
             FastGridControl selectGridControl = null;
@@ -1155,16 +1155,24 @@ namespace ExcelMerge.GUI.Views
 
                 var diffType = (selectGridControl.Model as DiffGridModel).DiffType;
 
+                // 修改 diff 数据（这部分可以只用来刷新表现）
                 var diffCell = SheetDiff.Rows[row.Value].Cells[col.Value];
+
 
                 if (diffType == DiffType.Source)
                 {
-                    diffCell.SrcCell.Value = diffCell.DstCell.Value;
+                    // 从左复制到右
+                    diffCell.DstCell.Value = diffCell.SrcCell.Value;
+                    diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
                 }
                 else
                 {
-                    diffCell.DstCell.Value = diffCell.SrcCell.Value;
+                    // 从右复制到左
+                    diffCell.SrcCell.Value = diffCell.DstCell.Value;
+                    diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
                 }
+
+                // diffCell.Status = ExcelCellStatus.None;
 
                 RefreshBySheet(false, true);
 

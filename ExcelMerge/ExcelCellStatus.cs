@@ -7,4 +7,11 @@
         Added,
         Removed,
     }
+
+    public enum ExcelCellMergeStatus
+    {
+        None,
+        UseLeft,
+        UseRight,
+    }
 }

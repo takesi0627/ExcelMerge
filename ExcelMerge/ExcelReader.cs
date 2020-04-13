@@ -19,16 +19,8 @@ namespace ExcelMerge
                 {
                     var cell = row.GetCell(columnIndex);
                     var stringValue = ExcelUtility.GetCellStringValue(cell);
+                    cells.Add(new ExcelCell(stringValue, columnIndex, rowIndex, cell));
 
-                    if (cell != null)
-                    {
-                        cells.Add(new ExcelCell(stringValue, columnIndex, rowIndex, cell.CellStyle));
-                    }
-                    else
-                    {
-                        cells.Add(new ExcelCell(stringValue, columnIndex, rowIndex));
-                    }
-                    
                 }
 
                 yield return new ExcelRow(actualRowIndex++, cells);

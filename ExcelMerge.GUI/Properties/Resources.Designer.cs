@@ -113,7 +113,16 @@ namespace ExcelMerge.GUI.Properties {
                 return ResourceManager.GetString("ContextMenu_CopyAsTsv", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   查找类似 复制到对面 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_CopyToAnother {
+            get {
+                return ResourceManager.GetString("ContextMenu_CopyToAnother", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   查找类似 Extract diff with this row as column header. 的本地化字符串。
         /// </summary>
@@ -156,15 +165,6 @@ namespace ExcelMerge.GUI.Properties {
         public static string ContextMenu_SetRowHeader {
             get {
                 return ResourceManager.GetString("ContextMenu_SetRowHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 使用另一边 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_UseAnother {
-            get {
-                return ResourceManager.GetString("ContextMenu_UseAnother", resourceCulture);
             }
         }
         

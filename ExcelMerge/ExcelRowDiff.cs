@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace ExcelMerge
@@ -35,6 +36,21 @@ namespace ExcelMerge
         public bool IsRemoved()
         {
             return Cells.All(c => c.Value.Status == ExcelCellStatus.Removed);
+        }
+
+        public bool NeedMerge()
+        {
+            return Cells.Any(c => c.Value.MergeStatus != ExcelCellMergeStatus.None);
+        }
+
+        public bool LeftEmpty()
+        {
+            return Cells.All(c => c.Value.SrcCell.Value == string.Empty);
+        }
+
+        public bool RightEmpty()
+        {
+            return Cells.All(c => c.Value.DstCell.Value == string.Empty);
         }
 
         public int ModifiedCellCount
