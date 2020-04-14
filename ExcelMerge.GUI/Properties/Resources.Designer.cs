@@ -115,6 +115,15 @@ namespace ExcelMerge.GUI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 复制整行到对面 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_CopyRowToAnother {
+            get {
+                return ResourceManager.GetString("ContextMenu_CopyRowToAnother", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 复制到对面 的本地化字符串。
         /// </summary>
         public static string ContextMenu_CopyToAnother {
@@ -147,6 +156,15 @@ namespace ExcelMerge.GUI.Properties {
         public static string ContextMenu_ResetRowHeader {
             get {
                 return ResourceManager.GetString("ContextMenu_ResetRowHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全部保存 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_SaveAll {
+            get {
+                return ResourceManager.GetString("ContextMenu_SaveAll", resourceCulture);
             }
         }
         

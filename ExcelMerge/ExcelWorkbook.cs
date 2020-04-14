@@ -109,20 +109,27 @@ namespace ExcelMerge
 
             var table = workbook.GetSheet(sheetName);
 
-            ExcelSheet sheetWrap = Sheets[sheetName];
+            var tableModified = false;
 
             // 添加需要的行，让原始表格和diff行数保持一致
             foreach (KeyValuePair<int, ExcelRowDiff> sheetDiffRow in sheetDiff.Rows)
             {
                 if (sheetDiffRow.Value.IsRemoved() && !isLeft)
                 {
-                    table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
+                    if (sheetDiffRow.Key <= table.LastRowNum)
+                    {
+                        table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
+                    }
+                    
                     table.CreateRow(sheetDiffRow.Key);
                 }
 
                 if (sheetDiffRow.Value.IsAdded() && isLeft)
                 {
-                    table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
+                    if (sheetDiffRow.Key <= table.LastRowNum)
+                    {
+                        table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
+                    }
                     table.CreateRow(sheetDiffRow.Key);
                 }
             }
@@ -203,9 +210,11 @@ namespace ExcelMerge
                                     rawCell.SetCellValue(targetWrap.Value);
                                     break;
                             }
-                        }
-                        
 
+                            
+                        }
+
+                        tableModified = true;
                     }
                     
                 }
@@ -243,13 +252,14 @@ namespace ExcelMerge
                 }
             }
 
-
-            // ExcelUtility.RemoveEmptyRows(table);
-
-            using (FileStream stream = new FileStream(rawFilePath, FileMode.Create, FileAccess.Write))
+            if (tableModified)
             {
-                workbook.Write(stream);
+                using (FileStream stream = new FileStream(rawFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    workbook.Write(stream);
+                }
             }
+            
 
         }
 

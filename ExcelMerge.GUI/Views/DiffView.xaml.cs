@@ -1121,25 +1121,16 @@ namespace ExcelMerge.GUI.Views
             return log.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
         }
 
-        private void CopyAsTsv_Click(object sender, RoutedEventArgs e)
+        private void SaveAll_Click(object sender, RoutedEventArgs e)
         {
-            // CopyToClipboardSelectedCells("\t");
-            // 这里用来测试各种方法
-            // LeftWorkbook.DumpByCreate();
-
-        }
-
-        private void CopyAsCsv_Click(object sender, RoutedEventArgs e)
-        {
-            // 后续先用这里作为保存入口
-            // CopyToClipboardSelectedCells(",");
+            // 全部保存
             LeftWorkbook.Dump(SheetName, SheetDiff, true);
             RightWorkbook.Dump(SheetName, SheetDiff, false);
         }
 
-        private void CopyToAnother_Click(object sender, RoutedEventArgs e)
+        private void CopyRow_Click(object sender, RoutedEventArgs e)
         {
-
+            // 复制整行
             FastGridControl selectGridControl = null;
 
             var menuItem = sender as MenuItem;
@@ -1153,7 +1144,74 @@ namespace ExcelMerge.GUI.Views
                 int? row = selectGridControl.CurrentRow;
                 int? col = selectGridControl.CurrentColumn;
 
-                var diffType = (selectGridControl.Model as DiffGridModel).DiffType;
+                var selectModel = selectGridControl.Model as DiffGridModel;
+                if (selectModel == null)
+                {
+                    return;
+                }
+
+                var diffType = selectModel.DiffType;
+
+                // 修改 diff 数据（这部分可以只用来刷新表现）
+                foreach (var excelCellDiff in SheetDiff.Rows[row.Value].Cells)
+                {
+                    var diffCell = excelCellDiff.Value;
+
+
+                    if (diffType == DiffType.Source)
+                    {
+                        // 从左复制到右
+                        diffCell.DstCell.Value = diffCell.SrcCell.Value;
+                        diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
+                    }
+                    else
+                    {
+                        // 从右复制到左
+                        diffCell.SrcCell.Value = diffCell.DstCell.Value;
+                        diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
+                    }
+                }
+                
+
+                // diffCell.Status = ExcelCellStatus.None;
+
+                RefreshBySheet(false, true);
+
+
+                UpdateLayout();
+            }
+        }
+
+        private void CopyColumn_Click(object sender, RoutedEventArgs e)
+        {
+            // 复制整列
+            LeftWorkbook.Dump(SheetName, SheetDiff, true);
+            RightWorkbook.Dump(SheetName, SheetDiff, false);
+        }
+
+        private void CopyToAnother_Click(object sender, RoutedEventArgs e)
+        {
+            // 复制到对面
+            FastGridControl selectGridControl = null;
+
+            var menuItem = sender as MenuItem;
+            if (menuItem != null)
+            {
+                selectGridControl = ((ContextMenu)menuItem.Parent).PlacementTarget as FastGridControl;
+            }
+
+            if (selectGridControl != null)
+            {
+                int? row = selectGridControl.CurrentRow;
+                int? col = selectGridControl.CurrentColumn;
+
+                var selectModel = selectGridControl.Model as DiffGridModel;
+                if (selectModel == null)
+                {
+                    return;
+                }
+
+                var diffType = selectModel.DiffType;
 
                 // 修改 diff 数据（这部分可以只用来刷新表现）
                 var diffCell = SheetDiff.Rows[row.Value].Cells[col.Value];

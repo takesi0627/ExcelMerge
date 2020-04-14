@@ -497,6 +497,12 @@ If you don't want to apply file settings, enable "Ignore File Setting".</value>
   <data name="ContextMenu_CopyAsTsv" xml:space="preserve">
     <value>Copy as TSV</value>
   </data>
+  <data name="ContextMenu_SaveAll" xml:space="preserve">
+    <value>全部保存</value>
+  </data>
+  <data name="ContextMenu_CopyRowToAnother" xml:space="preserve">
+    <value>复制整行到对面</value>
+  </data>
   <data name="ContextMenu_CopyToAnother" xml:space="preserve">
     <value>复制到对面</value>
   </data>
