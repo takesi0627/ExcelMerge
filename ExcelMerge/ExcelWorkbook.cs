@@ -118,6 +118,7 @@ namespace ExcelMerge
                 {
                     if (sheetDiffRow.Key <= table.LastRowNum)
                     {
+                        Debug.Print("ShiftAddRight : " + sheetDiffRow.ToString());
                         table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
                     }
                     
@@ -128,6 +129,7 @@ namespace ExcelMerge
                 {
                     if (sheetDiffRow.Key <= table.LastRowNum)
                     {
+                        Debug.Print("ShiftAddLeft : " + sheetDiffRow.ToString());
                         table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
                     }
                     table.CreateRow(sheetDiffRow.Key);
@@ -152,8 +154,8 @@ namespace ExcelMerge
                     continue;
                 }
             
-                var rawRow = table.GetRow(rowDiff.Key);
-            
+                var rawRow = table.GetRow(rowDiff.Key) ?? table.CreateRow(rowDiff.Key);
+
                 foreach (var cellDiff in rowDiff.Value.Cells)
                 {
                     var rawCell = rawRow.GetCell(cellDiff.Key, MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -227,7 +229,9 @@ namespace ExcelMerge
                 {
                     if (rowDiff.Value.LeftEmpty())
                     {
-                        table.ShiftRows(index+1, table.LastRowNum, -1);
+                        Debug.Print("ShiftBackLeft: " + rowDiff.ToString());
+                        if (index + 1 < table.LastRowNum)
+                            table.ShiftRows(index+1, table.LastRowNum, -1);
                     }
                     else
                     {
@@ -243,7 +247,12 @@ namespace ExcelMerge
 
                     if (rowDiff.Value.RightEmpty())
                     {
-                        table.ShiftRows(index + 1, table.LastRowNum, -1);
+                        Debug.Print("ShiftBackRight: " +  rowDiff.ToString());
+                        if (index + 1 < table.LastRowNum)
+                        {
+                            table.ShiftRows(index + 1, table.LastRowNum, -1);
+                        }
+                        
                     }
                     else
                     {
