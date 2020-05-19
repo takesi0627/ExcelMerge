@@ -454,6 +454,8 @@ namespace ExcelMerge.GUI.Views
             var srcWorkbook = workbooks.Item1;
             var dstWorkbook = workbooks.Item2;
 
+            DstSheetCombobox.SelectedIndex = SrcSheetCombobox.SelectedIndex;
+
             // SrcSheetCombobox.SelectedIndex = diffConfig.SrcSheetIndex;
             // DstSheetCombobox.SelectedIndex = diffConfig.DstSheetIndex;
 
