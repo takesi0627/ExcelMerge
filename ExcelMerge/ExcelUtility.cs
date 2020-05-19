@@ -1,87 +1,89 @@
 ﻿using System;
 using System.IO;
-using NPOI.SS.UserModel;
-using NPOI.HSSF.UserModel;
-using NPOI.XSSF.UserModel;
+using ClosedXML.Excel;
+
+// using NPOI.SS.UserModel;
+// using NPOI.HSSF.UserModel;
+// using NPOI.XSSF.UserModel;
 
 namespace ExcelMerge
 {
     public class ExcelUtility
     {
 
-        public static void RemoveEmptyRows(ISheet sheet)
-        {
-            bool isRowEmpty = false;
-            for (int i = 0; i <= sheet.LastRowNum; i++)
-            {
-                if (sheet.GetRow(i) == null)
-                {
-                    isRowEmpty = true;
-                    sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
-                    i--;
-                    continue;
-                }
-                for (int j = 0; j < sheet.GetRow(i).LastCellNum; j++)
-                {
-                    if (sheet.GetRow(i).GetCell(j) == null || GetCellStringValue(sheet.GetRow(i).GetCell(j)) == string.Empty)
-                    {
-                        isRowEmpty = true;
-                    }
-                    else
-                    {
-                        isRowEmpty = false;
-                        break;
-                    }
-                }
-                if (isRowEmpty == true)
-                {
-                    sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
-                    i--;
-                }
-            }
-        }
-        public static object GetCellValue(ICell cell)
-        {
-            if (cell == null)
-                return null;
+        // public static void RemoveEmptyRows(IXLWorksheet sheet)
+        // {
+        //     bool isRowEmpty = false;
+        //     for (int i = 0; i <= sheet.LastRowNum; i++)
+        //     {
+        //         if (sheet.GetRow(i) == null)
+        //         {
+        //             isRowEmpty = true;
+        //             sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
+        //             i--;
+        //             continue;
+        //         }
+        //         for (int j = 0; j < sheet.GetRow(i).LastCellNum; j++)
+        //         {
+        //             if (sheet.GetRow(i).GetCell(j) == null || GetCellStringValue(sheet.GetRow(i).GetCell(j)) == string.Empty)
+        //             {
+        //                 isRowEmpty = true;
+        //             }
+        //             else
+        //             {
+        //                 isRowEmpty = false;
+        //                 break;
+        //             }
+        //         }
+        //         if (isRowEmpty == true)
+        //         {
+        //             sheet.ShiftRows(i + 1, sheet.LastRowNum + 1, -1);
+        //             i--;
+        //         }
+        //     }
+        // }
+        // public static object GetCellValue(ICell cell)
+        // {
+        //     if (cell == null)
+        //         return null;
+        //
+        //     return GetCellValue(cell, cell.CellType);
+        // }
 
-            return GetCellValue(cell, cell.CellType);
-        }
+        // private static object GetCellValue(ICell cell, CellType type)
+        // {
+        //     if (cell != null)
+        //     {
+        //         switch (type)
+        //         {
+        //             case CellType.Numeric:
+        //                 if (DateUtil.IsCellDateFormatted(cell))
+        //                 {
+        //                     return cell.DateCellValue;
+        //                 }
+        //                 else
+        //                 {
+        //                     return cell.NumericCellValue;
+        //                 }
+        //             case CellType.String:
+        //                 return cell.StringCellValue;
+        //             case CellType.Boolean:
+        //                 return cell.BooleanCellValue;
+        //             case CellType.Formula:
+        //                 return GetCellValue(cell, cell.CachedFormulaResultType);
+        //         }
+        //     }
+        //
+        //     return string.Empty;
+        // }
 
-        private static object GetCellValue(ICell cell, CellType type)
-        {
-            if (cell != null)
-            {
-                switch (type)
-                {
-                    case CellType.Numeric:
-                        if (DateUtil.IsCellDateFormatted(cell))
-                        {
-                            return cell.DateCellValue;
-                        }
-                        else
-                        {
-                            return cell.NumericCellValue;
-                        }
-                    case CellType.String:
-                        return cell.StringCellValue;
-                    case CellType.Boolean:
-                        return cell.BooleanCellValue;
-                    case CellType.Formula:
-                        return GetCellValue(cell, cell.CachedFormulaResultType);
-                }
-            }
-
-            return string.Empty;
-        }
-
-        public static string GetCellStringValue(ICell cell)
-        {
-            if (cell == null)
-                return string.Empty;
-
-            return GetCellValue(cell).ToString();
-        }
+        // public static string GetCellStringValue(ICell cell)
+        // {
+        //     if (cell == null)
+        //         return string.Empty;
+        //
+        //     return GetCellValue(cell).ToString();
+        // }
 
         public static void CreateWorkbook(string path, ExcelWorkbookType workbookType)
         {
@@ -89,19 +91,21 @@ namespace ExcelMerge
                 throw new ArgumentException("The specified Excel type and path extension do not match.");
 
             var workbook = CreateWorkbook(workbookType);
-            var sheet = workbook.CreateSheet();
+            // var sheet = workbook.CreateSheet();
 
-            using (var fileStream = new FileStream(path, FileMode.Create))
-            {
-                workbook.Write(fileStream);
-            }
+            workbook.SaveAs(path);
+
+            // using (var fileStream = new FileStream(path, FileMode.Create))
+            // {
+            //     workbook.Write(fileStream);
+            // }
         }
-        private static IWorkbook CreateWorkbook(ExcelWorkbookType workbookType)
+        private static IXLWorkbook CreateWorkbook(ExcelWorkbookType workbookType)
         {
             switch (workbookType)
             {
-                case ExcelWorkbookType.XLS: return new HSSFWorkbook() as IWorkbook;
-                case ExcelWorkbookType.XLSX: return new XSSFWorkbook() as IWorkbook;
+                // case ExcelWorkbookType.XLS: return new HSSFWorkbook() as IWorkbook;
+                case ExcelWorkbookType.XLSX: return new XLWorkbook();
                 default: break;
             }
 
@@ -133,43 +137,43 @@ namespace ExcelMerge
             return ExcelWorkbookType.None;
         }
 
-        public static ExcelWorkbookType GetWorkboolTypeStrict(string path)
-        {
-            var type = GetWorkbookType(path);
+        // public static ExcelWorkbookType GetWorkboolTypeStrict(string path)
+        // {
+        //     var type = GetWorkbookType(path);
+        //
+        //     if (type == ExcelWorkbookType.None)
+        //     {
+        //         // if (IsXLS(path))
+        //         //     type = ExcelWorkbookType.XLS;
+        //         if (IsXLSX(path))
+        //             type = ExcelWorkbookType.XLSX;
+        //     }
+        //
+        //     return type;
+        // }
 
-            if (type == ExcelWorkbookType.None)
-            {
-                if (IsXLS(path))
-                    type = ExcelWorkbookType.XLS;
-                else if (IsXLSX(path))
-                    type = ExcelWorkbookType.XLSX;
-            }
+        // public static bool IsXLS(string path)
+        // {
+        //     try
+        //     {
+        //         return WorkbookFactory.Create(path) is HSSFWorkbook;
+        //     }
+        //     catch
+        //     {
+        //         return false;
+        //     }
+        // }
 
-            return type;
-        }
-
-        public static bool IsXLS(string path)
-        {
-            try
-            {
-                return WorkbookFactory.Create(path) is HSSFWorkbook;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public static bool IsXLSX(string path)
-        {
-            try
-            {
-                return WorkbookFactory.Create(path) is XSSFWorkbook;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        // public static bool IsXLSX(string path)
+        // {
+        //     try
+        //     {
+        //         return WorkbookFactory.Create(path) is XSSFWorkbook;
+        //     }
+        //     catch
+        //     {
+        //         return false;
+        //     }
+        // }
     }
 }

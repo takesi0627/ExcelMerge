@@ -385,7 +385,7 @@ namespace ExcelMerge.GUI.Views
             };
         }
 
-        private Tuple<ExcelWorkbook, ExcelWorkbook> ReadWorkbooks()
+        private Tuple<ExcelWorkbook, ExcelWorkbook> ReadWorkbooks(string sheetName)
         {
             ExcelWorkbook swb = null;
             ExcelWorkbook dwb = null;
@@ -396,8 +396,8 @@ namespace ExcelMerge.GUI.Views
                 progress.Report(Properties.Resources.Msg_ReadingFiles);
 
                 var config = CreateReadConfig();
-                swb = ExcelWorkbook.Create(srcPath, config);
-                dwb = ExcelWorkbook.Create(dstPath, config);
+                swb = ExcelWorkbook.Create(srcPath, config, sheetName);
+                dwb = ExcelWorkbook.Create(dstPath, config, sheetName);
             });
 
             return Tuple.Create(swb, dwb);
@@ -450,10 +450,6 @@ namespace ExcelMerge.GUI.Views
             var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
             DataGridEventDispatcher.Instance.DispatchPreExecuteDiffEvent(args);
 
-            var workbooks = ReadWorkbooks();
-            var srcWorkbook = workbooks.Item1;
-            var dstWorkbook = workbooks.Item2;
-
             DstSheetCombobox.SelectedIndex = SrcSheetCombobox.SelectedIndex;
 
             // SrcSheetCombobox.SelectedIndex = diffConfig.SrcSheetIndex;
@@ -462,6 +458,12 @@ namespace ExcelMerge.GUI.Views
             SheetName = SrcSheetCombobox.SelectedItem.ToString();
 
             Debug.Assert(SheetName == DstSheetCombobox.SelectedItem.ToString());
+
+            var workbooks = ReadWorkbooks(SheetName);
+            var srcWorkbook = workbooks.Item1;
+            var dstWorkbook = workbooks.Item2;
+
+            
 
             var srcSheet = srcWorkbook.Sheets[SheetName];
             var dstSheet = dstWorkbook.Sheets[SheetName];

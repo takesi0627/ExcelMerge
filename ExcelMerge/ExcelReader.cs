@@ -1,30 +1,55 @@
 ﻿using System.Collections.Generic;
-using NPOI.SS.UserModel;
+using System.Linq;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+
+// using NPOI.SS.UserModel;
 
 namespace ExcelMerge
 {
     internal class ExcelReader
     {
-        internal static IEnumerable<ExcelRow> Read(ISheet sheet)
+        internal static IEnumerable<ExcelRow> Read(IXLWorksheet sheet)
         {
-            var actualRowIndex = 0;
-            for (int rowIndex = 0; rowIndex <= sheet.LastRowNum; rowIndex++)
+            var wb = new XLWorkbook();
+
+            int totalRowCount = sheet.LastRowUsed().RowNumber();
+
+            for (int nowRowIndex = 1; nowRowIndex < totalRowCount+1; nowRowIndex++)
             {
-                var row = sheet.GetRow(rowIndex);
-                if (row == null)
+                var nowRow = sheet.Row(nowRowIndex);
+                if (nowRow == null)
                     continue;
 
                 var cells = new List<ExcelCell>();
-                for (int columnIndex = 0; columnIndex < row.LastCellNum; columnIndex++)
-                {
-                    var cell = row.GetCell(columnIndex);
-                    var stringValue = ExcelUtility.GetCellStringValue(cell);
-                    cells.Add(new ExcelCell(stringValue, columnIndex, rowIndex, cell));
 
+                var totalCellCount = nowRow.LastCellUsed().Address.ColumnNumber;
+
+                for (int nowCellIndex = 1; nowCellIndex < totalCellCount+1; nowCellIndex++)
+                {
+                    var cell = nowRow.Cell(nowCellIndex);
+                    if (cell != null)
+                    {
+                        if (cell.HasFormula)
+                        {
+                            var formulaString = cell.FormulaA1;
+                            cells.Add(new ExcelCell(formulaString, nowCellIndex, nowRowIndex, cell));
+                        }
+                        else
+                        {
+                            cells.Add(new ExcelCell(cell.GetString(), nowCellIndex, nowRowIndex, cell));
+                        }
+                    }
+                    else
+                    {
+                        cells.Add(new ExcelCell("", nowCellIndex, nowRowIndex, cell));
+                    }
                 }
 
-                yield return new ExcelRow(actualRowIndex++, cells);
+                yield return new ExcelRow(nowRowIndex, cells);
             }
+
+           
         }
     }
 }

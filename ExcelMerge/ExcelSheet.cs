@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using NPOI.SS.UserModel;
+using ClosedXML.Excel;
+// using NPOI.SS.UserModel;
 using NetDiff;
 using SKCore.Collection;
 
@@ -16,7 +18,7 @@ namespace ExcelMerge
             Rows = new SortedDictionary<int, ExcelRow>();
         }
 
-        public static ExcelSheet Create(ISheet srcSheet, ExcelSheetReadConfig config)
+        public static ExcelSheet Create(IXLWorksheet srcSheet, ExcelSheetReadConfig config)
         {
             var rows = ExcelReader.Read(srcSheet);
 
@@ -119,6 +121,7 @@ namespace ExcelMerge
             var sheet = new ExcelSheet();
             foreach (var row in rows)
             {
+                Debug.Print(row.Index.ToString());
                 sheet.Rows.Add(row.Index, row);
             }
 

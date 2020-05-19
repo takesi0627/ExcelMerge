@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NetDiff;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+// using NPOI.HSSF.UserModel;
+// using NPOI.SS.UserModel;
+// using NPOI.XSSF.UserModel;
 using System.Diagnostics;
+using ClosedXML.Excel;
 using NPOI.OpenXmlFormats.Dml.WordProcessing;
 
 
@@ -20,7 +21,7 @@ namespace ExcelMerge
 
         private string rawFilePath;
 
-        private XSSFWorkbook rawWorkbook;
+        private IXLWorkbook rawWorkbook;
 
         private string tmpFileName;
 
@@ -30,7 +31,7 @@ namespace ExcelMerge
             SheetNames = new List<string>();
         }
 
-        public static ExcelWorkbook Create(string path, ExcelSheetReadConfig config)
+        public static ExcelWorkbook Create(string path, ExcelSheetReadConfig config, string sheetName)
         {
             if (Path.GetExtension(path) == ".csv")
                 return CreateFromCsv(path, config);
@@ -38,21 +39,22 @@ namespace ExcelMerge
             if (Path.GetExtension(path) == ".tsv")
                 return CreateFromTsv(path, config);
 
-            string tmpFile = Path.GetTempFileName();
+            string tmpFile = Path.GetTempFileName() + ".xlsx";
             File.Copy(path, tmpFile, true);
 
-            var srcWb = new XSSFWorkbook(tmpFile);
+            var rawWorkbook = new XLWorkbook(tmpFile);
             var wb = new ExcelWorkbook();
 
             wb.rawFilePath = path;
-            wb.rawWorkbook = srcWb;
+            wb.rawWorkbook = rawWorkbook;
 
-            for (int i = 0; i < srcWb.NumberOfSheets; i++)
-            {
-                var srcSheet = srcWb.GetSheetAt(i);
-                wb.Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
-                wb.SheetNames.Add(srcSheet.SheetName);
-            }
+            rawWorkbook.TryGetWorksheet(sheetName, out var srcSheet);
+
+            // foreach (var srcSheet in rawWorkbook.Worksheets)
+            // {
+            wb.Sheets.Add(srcSheet.Name, ExcelSheet.Create(srcSheet, config));
+            wb.SheetNames.Add(srcSheet.Name);
+            // }
 
             return wb;
         }
@@ -107,7 +109,7 @@ namespace ExcelMerge
         {
             var workbook = rawWorkbook;
 
-            var table = workbook.GetSheet(sheetName);
+            workbook.TryGetWorksheet(sheetName, out var rawSheet);
 
             var tableModified = false;
 
@@ -116,23 +118,30 @@ namespace ExcelMerge
             {
                 if (sheetDiffRow.Value.IsRemoved() && !isLeft)
                 {
-                    if (sheetDiffRow.Key <= table.LastRowNum)
-                    {
-                        Debug.Print("ShiftAddRight : " + sheetDiffRow.ToString());
-                        table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
-                    }
+                    Debug.Print("ShiftAddRight : " + sheetDiffRow.ToString());
+                    // rawSheet.ShiftRows(sheetDiffRow.Key, rawSheet.LastRowNum, 1);
+                    rawSheet.Row(sheetDiffRow.Key + 1).InsertRowsAbove(1);
+                    // if (sheetDiffRow.Key <= rawSheet.RowCount())
+                    // {
+                    //     Debug.Print("ShiftAddRight : " + sheetDiffRow.ToString());
+                    //     // rawSheet.ShiftRows(sheetDiffRow.Key, rawSheet.LastRowNum, 1);
+                    //     rawSheet.Row(sheetDiffRow.Key + 1).InsertRowsAbove(1);
+                    // }
                     
-                    table.CreateRow(sheetDiffRow.Key);
+                    // rawSheet.CreateRow(sheetDiffRow.Key);
                 }
 
                 if (sheetDiffRow.Value.IsAdded() && isLeft)
                 {
-                    if (sheetDiffRow.Key <= table.LastRowNum)
-                    {
-                        Debug.Print("ShiftAddLeft : " + sheetDiffRow.ToString());
-                        table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
-                    }
-                    table.CreateRow(sheetDiffRow.Key);
+                    Debug.Print("ShiftAddLeft : " + sheetDiffRow.ToString());
+                    rawSheet.Row(sheetDiffRow.Key + 1).InsertRowsAbove(1);
+                    // if (sheetDiffRow.Key <= rawSheet.RowCount())
+                    // {
+                    //     Debug.Print("ShiftAddLeft : " + sheetDiffRow.ToString());
+                    //     rawSheet.Row(sheetDiffRow.Key).InsertRowsAbove(1);
+                    //     // rawSheet.ShiftRows(sheetDiffRow.Key, rawSheet.LastRowNum, 1);
+                    // }
+                    // rawSheet.CreateRow(sheetDiffRow.Key);
                 }
             }
 
@@ -153,12 +162,16 @@ namespace ExcelMerge
                 {
                     continue;
                 }
-            
-                var rawRow = table.GetRow(rowDiff.Key) ?? table.CreateRow(rowDiff.Key);
+
+                // rawSheet.Row(rowDiff.Key);
+                var rawRow = rawSheet.Row(rowDiff.Key + 1);
 
                 foreach (var cellDiff in rowDiff.Value.Cells)
                 {
-                    var rawCell = rawRow.GetCell(cellDiff.Key, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    var rawCol = cellDiff.Key + 1;
+                    Debug.Print(rawCol.ToString());
+                    var rawCell = rawRow.Cell(rawCol);
+                    // var rawCell = rawRow.GetCell(cellDiff.Key, MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     ExcelCell targetWrap = null;
                     if (isLeft)
                     {
@@ -179,42 +192,38 @@ namespace ExcelMerge
 
                     if (targetWrap != null)
                     {
-                        if (targetWrap.RawCell != null)
-                        {
-                            var style = workbook.CreateCellStyle();
-
-                            style.CloneStyleFrom(targetWrap.RawCell.CellStyle);
-                            rawCell.CellStyle = style;
-                            rawCell.SetCellType(targetWrap.RawCell.CellType);
-
-
-                            switch (targetWrap.RawCell.CellType)
-                            {
-                                case CellType.Unknown:
-                                    break;
-                                case CellType.Numeric:
-                                    rawCell.SetCellValue(targetWrap.RawCell.NumericCellValue);
-                                    break;
-                                case CellType.String:
-                                    rawCell.SetCellValue(targetWrap.RawCell.StringCellValue);
-                                    break;
-                                case CellType.Formula:
-                                    rawCell.SetCellValue(targetWrap.RawCell.CellFormula);
-                                    break;
-                                case CellType.Blank:
-                                    break;
-                                case CellType.Boolean:
-                                    rawCell.SetCellValue(targetWrap.RawCell.BooleanCellValue);
-                                    break;
-                                case CellType.Error:
-                                    break;
-                                default:
-                                    rawCell.SetCellValue(targetWrap.Value);
-                                    break;
-                            }
-
-                            
-                        }
+                        targetWrap.RawCell?.CopyTo(rawCell);
+                        // var style = workbook.CreateCellStyle();
+                        //
+                        // style.CloneStyleFrom(targetWrap.RawCell.CellStyle);
+                        // rawCell.CellStyle = style;
+                        // rawCell.SetCellType(targetWrap.RawCell.CellType);
+                        //
+                        //
+                        // switch (targetWrap.RawCell.CellType)
+                        // {
+                        //     case CellType.Unknown:
+                        //         break;
+                        //     case CellType.Numeric:
+                        //         rawCell.SetCellValue(targetWrap.RawCell.NumericCellValue);
+                        //         break;
+                        //     case CellType.String:
+                        //         rawCell.SetCellValue(targetWrap.RawCell.StringCellValue);
+                        //         break;
+                        //     case CellType.Formula:
+                        //         rawCell.SetCellValue(targetWrap.RawCell.CellFormula);
+                        //         break;
+                        //     case CellType.Blank:
+                        //         break;
+                        //     case CellType.Boolean:
+                        //         rawCell.SetCellValue(targetWrap.RawCell.BooleanCellValue);
+                        //         break;
+                        //     case CellType.Error:
+                        //         break;
+                        //     default:
+                        //         rawCell.SetCellValue(targetWrap.Value);
+                        //         break;
+                        // }
 
                         tableModified = true;
                     }
@@ -230,8 +239,7 @@ namespace ExcelMerge
                     if (rowDiff.Value.LeftEmpty())
                     {
                         Debug.Print("ShiftBackLeft: " + rowDiff.ToString());
-                        if (index + 1 < table.LastRowNum)
-                            table.ShiftRows(index+1, table.LastRowNum, -1);
+                        rawSheet.Row(index).Delete();
                     }
                     else
                     {
@@ -248,10 +256,11 @@ namespace ExcelMerge
                     if (rowDiff.Value.RightEmpty())
                     {
                         Debug.Print("ShiftBackRight: " +  rowDiff.ToString());
-                        if (index + 1 < table.LastRowNum)
-                        {
-                            table.ShiftRows(index + 1, table.LastRowNum, -1);
-                        }
+                        rawSheet.Row(index).Delete();
+                        // if (index + 1 < rawSheet.RowCount())
+                        // {
+                        //     rawSheet.Row(index).Delete();
+                        // }
                         
                     }
                     else
@@ -263,10 +272,11 @@ namespace ExcelMerge
 
             if (tableModified)
             {
-                using (FileStream stream = new FileStream(rawFilePath, FileMode.Create, FileAccess.Write))
-                {
-                    workbook.Write(stream);
-                }
+                workbook.SaveAs(rawFilePath);
+                // using (FileStream stream = new FileStream(rawFilePath, FileMode.Create, FileAccess.Write))
+                // {
+                //     workbook.Write(stream);
+                // }
             }
             
 
@@ -284,9 +294,13 @@ namespace ExcelMerge
             }
             else
             {
-                var wb = WorkbookFactory.Create(path);
-                for (int i = 0; i < wb.NumberOfSheets; i++)
-                    yield return wb.GetSheetAt(i).SheetName;
+                var wb = new XLWorkbook(path);
+                foreach (var wbWorksheet in wb.Worksheets)
+                {
+                    yield return wbWorksheet.Name;
+                }
+                // for (int i = 0; i < wb.NumberOfSheets; i++)
+                //     yield return wb.GetSheetAt(i).SheetName;
             }
         }
 

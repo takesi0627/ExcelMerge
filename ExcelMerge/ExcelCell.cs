@@ -1,4 +1,6 @@
-﻿using NPOI.SS.UserModel;
+﻿// using NPOI.SS.UserModel;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ExcelMerge
 {
@@ -7,10 +9,10 @@ namespace ExcelMerge
         public string Value { get; set; }
         public int OriginalColumnIndex { get; private set; }
         public int OriginalRowIndex { get; private set; }
-        public ICell RawCell { get; }
+        public IXLCell RawCell { get; }
 
 
-        public ExcelCell(string value, int originalColumnIndex, int originalRowIndex, ICell rawCell = null)
+        public ExcelCell(string value, int originalColumnIndex, int originalRowIndex, IXLCell rawCell = null)
         {
             Value = value;
             OriginalColumnIndex = originalColumnIndex;
