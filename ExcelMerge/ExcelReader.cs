@@ -18,33 +18,36 @@ namespace ExcelMerge
             for (int nowRowIndex = 1; nowRowIndex < totalRowCount+1; nowRowIndex++)
             {
                 var nowRow = sheet.Row(nowRowIndex);
-                if (nowRow == null)
-                    continue;
 
                 var cells = new List<ExcelCell>();
 
-                var totalCellCount = nowRow.LastCellUsed().Address.ColumnNumber;
 
-                for (int nowCellIndex = 1; nowCellIndex < totalCellCount+1; nowCellIndex++)
+                if (nowRow.LastCellUsed() != null)
                 {
-                    var cell = nowRow.Cell(nowCellIndex);
-                    if (cell != null)
+                    var totalCellCount = nowRow.LastCellUsed().Address.ColumnNumber;
+
+                    for (int nowCellIndex = 1; nowCellIndex < totalCellCount + 1; nowCellIndex++)
                     {
-                        if (cell.HasFormula)
+                        var cell = nowRow.Cell(nowCellIndex);
+                        if (cell != null)
                         {
-                            var formulaString = cell.FormulaA1;
-                            cells.Add(new ExcelCell(formulaString, nowCellIndex, nowRowIndex, cell));
+                            if (cell.HasFormula)
+                            {
+                                var formulaString = cell.FormulaA1;
+                                cells.Add(new ExcelCell(formulaString, nowCellIndex, nowRowIndex, cell));
+                            }
+                            else
+                            {
+                                cells.Add(new ExcelCell(cell.GetString(), nowCellIndex, nowRowIndex, cell));
+                            }
                         }
                         else
                         {
-                            cells.Add(new ExcelCell(cell.GetString(), nowCellIndex, nowRowIndex, cell));
+                            cells.Add(new ExcelCell("", nowCellIndex, nowRowIndex, cell));
                         }
                     }
-                    else
-                    {
-                        cells.Add(new ExcelCell("", nowCellIndex, nowRowIndex, cell));
-                    }
                 }
+                
 
                 yield return new ExcelRow(nowRowIndex, cells);
             }

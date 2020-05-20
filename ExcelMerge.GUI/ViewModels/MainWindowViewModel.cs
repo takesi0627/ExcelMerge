@@ -146,6 +146,7 @@ namespace ExcelMerge.GUI.ViewModels
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Title = parameter.Title;
+            // dialog.InitialDirectory = "C:\\U1\\client";
             if (dialog.ShowDialog().Value)
                 parameter.PropertyInfo.SetValue(parameter.Obj, dialog.FileName);
         }
