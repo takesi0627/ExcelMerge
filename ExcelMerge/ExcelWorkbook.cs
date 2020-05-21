@@ -23,8 +23,6 @@ namespace ExcelMerge
 
         private IXLWorkbook rawWorkbook;
 
-        private string tmpFileName;
-
         public ExcelWorkbook()
         {
             Sheets = new Dictionary<string, ExcelSheet>();

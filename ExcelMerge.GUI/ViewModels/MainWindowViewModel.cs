@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +10,7 @@ using Prism.Commands;
 using ExcelMerge.GUI.Views;
 using ExcelMerge.GUI.Settings;
 using ExcelMerge.GUI.ValueConverters;
+using Newtonsoft.Json;
 
 namespace ExcelMerge.GUI.ViewModels
 {
@@ -69,11 +72,15 @@ namespace ExcelMerge.GUI.ViewModels
             private set { SetProperty(ref cultureName, value); }
         }
 
+        private string defaultLeftPath;
+        private string defaultRightPath;
+
         public DelegateCommand<ExternalCommand> ExecuteExternalCommandCommand { get; private set; }
         public DelegateCommand OpenExternalCommandsWindowCommand { get; private set; }
         public DelegateCommand OpenFileSettingsWindowCommand { get; private set; }
         public DelegateCommand OpenDiffExtractionSettingsWindowCommand { get; private set; }
-        public DelegateCommand<FileDialogParameter> OpenFileDialogCommand { get; private set; }
+        public DelegateCommand<FileDialogParameter> OpenSrcFileDialogCommand { get; private set; }
+        public DelegateCommand<FileDialogParameter> OpenDstFileDialogCommand { get; private set; }
         public DelegateCommand<string> OpenAsSrcFileCommand { get; private set; }
         public DelegateCommand<string> OpenAsDstFileCommand { get; private set; }
         public DelegateCommand<string> OpenFileSetCommand { get; private set; }
@@ -89,13 +96,22 @@ namespace ExcelMerge.GUI.ViewModels
             OpenExternalCommandsWindowCommand = new DelegateCommand(OpenExternalCommandsWindow);
             OpenFileSettingsWindowCommand = new DelegateCommand(OpenFileSettingsWindow);
             OpenDiffExtractionSettingsWindowCommand = new DelegateCommand(OpenDiffExtractionSettingWindow);
-            OpenFileDialogCommand = new DelegateCommand<FileDialogParameter>(OpenFileDialog);
+            OpenSrcFileDialogCommand = new DelegateCommand<FileDialogParameter>(OpenSrcFileDialog);
+            OpenDstFileDialogCommand = new DelegateCommand<FileDialogParameter>(OpenDstFileDialog);
             OpenAsSrcFileCommand = new DelegateCommand<string>(OpenAsSrcFile);
             OpenAsDstFileCommand = new DelegateCommand<string>(OpenAsDstFile);
             OpenFileSetCommand = new DelegateCommand<string>(OpenFileSet);
             ChangeLanguageCommand = new DelegateCommand<string>(ChangeLanguage);
 
             App.Instance.Setting.PropertyChanged += Setting_PropertyChanged;
+
+            if (File.Exists(@"config.json"))
+            {
+                var text = File.ReadAllText(@"config.json");
+                var pathDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
+                defaultLeftPath = pathDict["defaultLeft"];
+                defaultRightPath = pathDict["defaultRight"];
+            }
         }
 
         private void Setting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -142,13 +158,36 @@ namespace ExcelMerge.GUI.ViewModels
             window.ShowDialog();
         }
 
-        private void OpenFileDialog(FileDialogParameter parameter)
+        private void OpenSrcFileDialog(FileDialogParameter parameter)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Title = parameter.Title;
-            // dialog.InitialDirectory = "C:\\U1\\client";
+            dialog.InitialDirectory = defaultLeftPath;
             if (dialog.ShowDialog().Value)
+            {
                 parameter.PropertyInfo.SetValue(parameter.Obj, dialog.FileName);
+                if (defaultRightPath != null)
+                {
+                    DstPath = dialog.FileName.Replace(defaultLeftPath, defaultRightPath);
+                }
+                
+            }
+
+        }
+
+        private void OpenDstFileDialog(FileDialogParameter parameter)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Title = parameter.Title;
+            dialog.InitialDirectory = defaultRightPath;
+            if (dialog.ShowDialog().Value)
+            {
+                parameter.PropertyInfo.SetValue(parameter.Obj, dialog.FileName);
+                if (defaultRightPath != null)
+                {
+                    SrcPath = dialog.FileName.Replace(defaultRightPath, defaultLeftPath);
+                }
+            }
         }
 
         private void OpenAsSrcFile(string file)

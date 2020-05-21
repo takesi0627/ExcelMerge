@@ -311,7 +311,7 @@
           <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsTsv}" Click="CopyAsTsv_Click" InputGestureText="Ctrl + c"/> -->
           <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsCsv}" Click="CopyAsCsv_Click" InputGestureText="Ctrl + C"/> -->
           <MenuItem Header="{x:Static props:Resources.ContextMenu_SaveAll}" Click="SaveAll_Click" />
-          <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyRowToAnother}" Click="CopyRow_Click" />
+          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyRowToAnother}" Click="CopyRow_Click" /> -->
           <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyToAnother}" Click="CopyToAnother_Click" />
         </ContextMenu>
       </fg:FastGridControl.ContextMenu>
@@ -356,7 +356,7 @@
           <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsTsv}" Click="CopyAsTsv_Click" InputGestureText="Ctrl + c"/> -->
           <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsCsv}" Click="CopyAsCsv_Click" InputGestureText="Ctrl + C"/> -->
                     <MenuItem Header="{x:Static props:Resources.ContextMenu_SaveAll}" Click="SaveAll_Click" />
-                    <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyRowToAnother}" Click="CopyRow_Click" />
+                    <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyRowToAnother}" Click="CopyRow_Click" /> -->
                     <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyToAnother}" Click="CopyToAnother_Click" />
           <!--<MenuItem Header="{x:Static props:Resources.ContextMenu_BuildRowBaseLog}" Click="BuildRowBaseLog_Click"/>
                     <MenuItem Header="{x:Static props:Resources.ContextMenu_BuildColumnBaseLog}" Click="BuildColumnBaseLog_Click"/>-->

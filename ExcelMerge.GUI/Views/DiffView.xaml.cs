@@ -41,6 +41,8 @@ namespace ExcelMerge.GUI.Views
         private string SheetName;
         private ExcelSheetDiff SheetDiff;
 
+        private bool onlyDiff;
+
         public DiffView()
         {
             InitializeComponent();
@@ -652,14 +654,18 @@ namespace ExcelMerge.GUI.Views
 
         private void ShowAllRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
-            DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, false);
+            // var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
+            // DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, false);
+            onlyDiff = false;
+            RefreshOnlyDiff(onlyDiff);
         }
 
         private void ShowOnlyDiffRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
-            DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, true);
+            // var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
+            // DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, true);
+            onlyDiff = true;
+            RefreshOnlyDiff(onlyDiff);
         }
 
         private bool ValidateDataGrids()
@@ -1145,8 +1151,7 @@ namespace ExcelMerge.GUI.Views
 
             if (selectGridControl != null)
             {
-                int? row = selectGridControl.CurrentRow;
-                int? col = selectGridControl.CurrentColumn;
+                var cellAddress = selectGridControl.CurrentModelCell;
 
                 var selectModel = selectGridControl.Model as DiffGridModel;
                 if (selectModel == null)
@@ -1156,33 +1161,11 @@ namespace ExcelMerge.GUI.Views
 
                 var diffType = selectModel.DiffType;
 
-                // 修改 diff 数据（这部分可以只用来刷新表现）
-                foreach (var excelCellDiff in SheetDiff.Rows[row.Value].Cells)
-                {
-                    var diffCell = excelCellDiff.Value;
+                var diffCellList = (from cell in SheetDiff.Rows[cellAddress.Row.Value].Cells 
+                    select cell.Value).ToArray();
 
+                MergeCellList(diffType, new List<ExcelCellDiff>(diffCellList));
 
-                    if (diffType == DiffType.Source)
-                    {
-                        // 从左复制到右
-                        diffCell.DstCell.Value = diffCell.SrcCell.Value;
-                        diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
-                    }
-                    else
-                    {
-                        // 从右复制到左
-                        diffCell.SrcCell.Value = diffCell.DstCell.Value;
-                        diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
-                    }
-                }
-                
-
-                // diffCell.Status = ExcelCellStatus.None;
-
-                RefreshBySheet(false, true);
-
-
-                UpdateLayout();
             }
         }
 
@@ -1191,6 +1174,39 @@ namespace ExcelMerge.GUI.Views
             // 复制整列
             LeftWorkbook.Dump(SheetName, SheetDiff, true);
             RightWorkbook.Dump(SheetName, SheetDiff, false);
+        }
+
+        private void RefreshOnlyDiff(bool onlyDiff)
+        {
+            var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
+            DataGridEventDispatcher.Instance.DispatchDisplayFormatChangeEvent(args, onlyDiff);
+        }
+
+
+        private void MergeCellList(DiffType diffType, List<ExcelCellDiff> cellDiffList)
+        {
+            foreach (var diffCell in cellDiffList)
+            {
+                if (diffType == DiffType.Source)
+                {
+                    // 从左复制到右
+                    diffCell.DstCell.Value = diffCell.SrcCell.Value;
+                    diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
+                }
+                else
+                {
+                    // 从右复制到左
+                    diffCell.SrcCell.Value = diffCell.DstCell.Value;
+                    diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
+                }
+            }
+
+            RefreshBySheet(false, true);
+
+            RefreshOnlyDiff(onlyDiff);
+
+
+            UpdateLayout();
         }
 
         private void CopyToAnother_Click(object sender, RoutedEventArgs e)
@@ -1206,8 +1222,7 @@ namespace ExcelMerge.GUI.Views
 
             if (selectGridControl != null)
             {
-                int? row = selectGridControl.CurrentRow;
-                int? col = selectGridControl.CurrentColumn;
+                var cellAddress = selectGridControl.CurrentModelCell;
 
                 var selectModel = selectGridControl.Model as DiffGridModel;
                 if (selectModel == null)
@@ -1215,31 +1230,20 @@ namespace ExcelMerge.GUI.Views
                     return;
                 }
 
+                var cellDiffList = (from selectCell in selectGridControl.GetSelectedModelCells() 
+                    select SheetDiff.Rows[selectCell.Row.Value].Cells[selectCell.Column.Value]).ToList();
+
+
                 var diffType = selectModel.DiffType;
 
                 // 修改 diff 数据（这部分可以只用来刷新表现）
-                var diffCell = SheetDiff.Rows[row.Value].Cells[col.Value];
+                // var diffCell = SheetDiff.Rows[cellAddress.Row.Value].Cells[cellAddress.Column.Value];
+                //
+                // var cellDiffList = new List<ExcelCellDiff>();
+                // cellDiffList.Add(diffCell);
 
-
-                if (diffType == DiffType.Source)
-                {
-                    // 从左复制到右
-                    diffCell.DstCell.Value = diffCell.SrcCell.Value;
-                    diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
-                }
-                else
-                {
-                    // 从右复制到左
-                    diffCell.SrcCell.Value = diffCell.DstCell.Value;
-                    diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
-                }
-
-                // diffCell.Status = ExcelCellStatus.None;
-
-                RefreshBySheet(false, true);
-
-
-                UpdateLayout();
+                MergeCellList(diffType, cellDiffList);
+                
             }
 
         }

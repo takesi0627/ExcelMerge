@@ -38,7 +38,7 @@
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <MenuItem Header="{x:Static props:Resources.Word_File}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_OpenSrcFile}"
-                          Command="{Binding OpenFileDialogCommand}"
+                          Command="{Binding OpenSrcFileDialogCommand}"
                           >
                     <MenuItem.CommandParameter>
                         <MultiBinding Converter="{StaticResource FileDialogConverter}">
@@ -48,7 +48,7 @@
                     </MenuItem.CommandParameter>
                 </MenuItem>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_OpenDstFile}"
-                          Command="{Binding OpenFileDialogCommand}"
+                          Command="{Binding OpenDstFileDialogCommand}"
                           >
                     <MenuItem.CommandParameter>
                         <MultiBinding Converter="{StaticResource FileDialogConverter}">
