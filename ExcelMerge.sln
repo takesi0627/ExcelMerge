@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDiff", "NetDiff\NetDiff\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDiff.Test", "NetDiff\NetDiff.Test\NetDiff.Test.csproj", "{AAFA1775-1F46-4AA5-97D3-DE88D591828D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelMerge.SVN", "ExcelMerge.SVN\ExcelMerge.SVN.csproj", "{45A9B2E8-D131-447B-919C-3BDBD099480B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{AAFA1775-1F46-4AA5-97D3-DE88D591828D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAFA1775-1F46-4AA5-97D3-DE88D591828D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAFA1775-1F46-4AA5-97D3-DE88D591828D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A9B2E8-D131-447B-919C-3BDBD099480B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A9B2E8-D131-447B-919C-3BDBD099480B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A9B2E8-D131-447B-919C-3BDBD099480B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A9B2E8-D131-447B-919C-3BDBD099480B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

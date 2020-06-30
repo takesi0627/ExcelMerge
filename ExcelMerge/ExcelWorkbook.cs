@@ -29,6 +29,29 @@ namespace ExcelMerge
             SheetNames = new List<string>();
         }
 
+        public static ExcelWorkbook CreateSVN(string path)
+        {
+            // string tmpFile = Path.GetTempFileName() + ".xlsx";
+            // File.Copy(path, tmpFile, true);
+            // var t = File.Exists(path);
+
+            var rawWorkbook = new XLWorkbook(path);
+            var wb = new ExcelWorkbook();
+
+            wb.rawFilePath = path;
+            wb.rawWorkbook = rawWorkbook;
+
+            var config = new ExcelSheetReadConfig();
+
+            foreach (var srcSheet in rawWorkbook.Worksheets)
+            {
+                wb.Sheets.Add(srcSheet.Name, ExcelSheet.Create(srcSheet, config));
+                wb.SheetNames.Add(srcSheet.Name);
+            }
+
+            return wb;
+        }
+
         public static ExcelWorkbook Create(string path, ExcelSheetReadConfig config, string sheetName)
         {
             if (Path.GetExtension(path) == ".csv")
