@@ -24,5 +24,10 @@ namespace ExcelMerge
         {
             return new ExcelCell(Value, OriginalColumnIndex, OriginalRowIndex, RawCell);
         }
+
+        public bool ValueEqual(ExcelCell cell)
+        {
+            return Value == cell.Value;
+        }
     }
 }

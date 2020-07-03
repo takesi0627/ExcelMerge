@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ExcelMerge
 {
@@ -58,6 +59,50 @@ namespace ExcelMerge
             get { return Cells.Count(c => c.Value.Status != ExcelCellStatus.None); }
         }
 
+        public bool LeftEqual(ExcelRowDiff otherDiff)
+        {
+            foreach (var cellDiff in Cells)
+            {
+                if (!otherDiff.Cells.ContainsKey(cellDiff.Key))
+                {
+                    return false;
+                }
+
+                if (!cellDiff.Value.SrcCell.ValueEqual(otherDiff.Cells[cellDiff.Key].SrcCell))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public ExcelRowDiff getMergedRowDiff(ExcelRowDiff otherDiff)
+        {
+            Debug.Assert(LeftEqual(otherDiff));
+            var mergedRowDiff = new ExcelRowDiff(-1);
+
+            int cellIndex = 0;
+
+            foreach (var cellDiff in Cells)
+            {
+                var cellKey = cellDiff.Key;
+
+                if (cellDiff.Value.Status == ExcelCellStatus.None)
+                {
+                    mergedRowDiff.Cells.Add(cellIndex, otherDiff.Cells[cellKey]);
+                }
+                else
+                {
+                    Debug.Assert(otherDiff.Cells[cellKey].Status == ExcelCellStatus.None);
+                    mergedRowDiff.Cells.Add(cellIndex, cellDiff.Value);
+                }
+
+                cellIndex++;
+            }
+
+            return mergedRowDiff;
+        }
 
         // TODO: Add row status field and implemnt UpdateStaus method.
     }

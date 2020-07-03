@@ -80,51 +80,70 @@ namespace ExcelMerge
             return wb;
         }
 
-        // public void DumpByCreate()
-        // {
-        //     // 尝试直接通过封装的数据来创建出原始 excel 表，比较冒险，可能有缺少的内容导致写入的 excel 错误
-        //     // 但是这样写入成功之后，界面操作修改都会变得简单
-        //     var wb = new XSSFWorkbook();
-        //
-        //     foreach (var sheetName in SheetNames)
-        //     {
-        //         var table = wb.CreateSheet(sheetName);
-        //
-        //         var sheetWrap = Sheets[sheetName];
-        //
-        //         foreach (var rowWrap in sheetWrap.Rows)
-        //         {
-        //             var row = table.CreateRow(rowWrap.Key);
-        //
-        //             // if (row is null)
-        //             // {
-        //             //     break;
-        //             // }
-        //
-        //             var i = 0;
-        //             foreach (var cellWrap in rowWrap.Value.Cells)
-        //             {
-        //                 var cell = row.CreateCell(i);
-        //                 // var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        //
-        //                 XSSFCellStyle cellstyle = wb.CreateCellStyle() as XSSFCellStyle;
-        //                 if (cellWrap.OriginalCellStyle != null)
-        //                 {
-        //                     cellstyle.CloneStyleFrom(cellWrap.OriginalCellStyle);
-        //                 }
-        //                 
-        //                 cell.CellStyle = cellstyle;
-        //                 cell.SetCellValue(cellWrap.Value);
-        //                 i++;
-        //             }
-        //         }
-        //     }
-        //
-        //     using (FileStream stream = new FileStream(@"D:/test.xlsx", FileMode.Create, FileAccess.Write))
-        //     {
-        //         wb.Write(stream);
-        //     }
-        // }
+        public void MergeSheetDiff(string sheetName, ExcelSheetDiff sheetDiff)
+        {
+            var workbook = rawWorkbook;
+
+            workbook.TryGetWorksheet(sheetName, out var rawSheet);
+
+            // 添加需要的行，让原始表格和diff行数保持一致
+            foreach (KeyValuePair<int, ExcelRowDiff> sheetDiffRow in sheetDiff.Rows)
+            {
+                if (sheetDiffRow.Value.IsAdded())
+                {
+                    Debug.Print("ShiftAddLeft : " + sheetDiffRow.ToString());
+                    rawSheet.Row(sheetDiffRow.Key + 1).InsertRowsAbove(1);
+                }
+            }
+
+            // 逐行比对修改
+            foreach (var rowDiff in sheetDiff.Rows)
+            {
+
+                var rawRow = rawSheet.Row(rowDiff.Key + 1);
+
+                foreach (var cellDiff in rowDiff.Value.Cells)
+                {
+                    var rawCol = cellDiff.Key + 1;
+                    Debug.Print(rawCol.ToString());
+                    var rawCell = rawRow.Cell(rawCol);
+                    ExcelCell targetWrap = cellDiff.Value.DstCell;
+
+                    if (targetWrap != null)
+                    {
+                        if (targetWrap.RawCell != null)
+                        {
+                            targetWrap.RawCell.CopyTo(rawCell);
+                        }
+                        else
+                        {
+                            rawCell.Clear();
+                        }
+                    }
+
+                }
+            }
+
+            int index = 1;
+            foreach (var rowDiff in sheetDiff.Rows)
+            {
+                if (rowDiff.Value.RightEmpty())
+                {
+                    Debug.Print("ShiftBackLeft: " + index.ToString());
+                    rawSheet.Row(index).Delete();
+                }
+                else
+                {
+                    index++;
+                }
+
+            }
+        }
+
+        public void SaveAs(string targetPath)
+        {
+            rawWorkbook.SaveAs(targetPath);
+        }
 
         public void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft)
         {
