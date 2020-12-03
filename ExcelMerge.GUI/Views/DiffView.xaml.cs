@@ -1118,28 +1118,16 @@ namespace ExcelMerge.GUI.Views
 
                 var diffType = selectModel.DiffType;
 
-                // 修改 diff 数据（这部分可以只用来刷新表现）
-                foreach (var excelCellDiff in SheetDiff.Rows[row.Value].Cells)
+                if (diffType == DiffType.Source)
                 {
-                    var diffCell = excelCellDiff.Value;
-
-
-                    if (diffType == DiffType.Source)
-                    {
-                        // 从左复制到右
-                        diffCell.DstCell.Value = diffCell.SrcCell.Value;
-                        diffCell.MergeStatus = ExcelCellMergeStatus.UseLeft;
-                    }
-                    else
-                    {
-                        // 从右复制到左
-                        diffCell.SrcCell.Value = diffCell.DstCell.Value;
-                        diffCell.MergeStatus = ExcelCellMergeStatus.UseRight;
-                    }
+                    // 左から右へマージ
+                    SheetDiff.Rows[row.Value].Merge(ExcelCellMergeStatus.UseLeft);
                 }
-                
-
-                // diffCell.Status = ExcelCellStatus.None;
+                else
+                {
+                    // 右から左へマージ
+                    SheetDiff.Rows[row.Value].Merge(ExcelCellMergeStatus.UseRight);
+                }
 
                 RefreshBySheet(false, true);
 

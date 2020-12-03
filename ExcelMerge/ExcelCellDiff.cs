@@ -29,5 +29,24 @@
         {
             return $"Src: {SrcCell.Value} Dst: {DstCell.Value}: Status: {Status}";
         }
+
+        public void Merge(ExcelCellMergeStatus mergeStatus)
+        {
+            if (mergeStatus == ExcelCellMergeStatus.None)
+            {
+                return;
+            }
+
+            if (mergeStatus == ExcelCellMergeStatus.UseLeft)
+            {
+                DstCell.Value = SrcCell.Value;
+            }
+            else if (mergeStatus == ExcelCellMergeStatus.UseRight)
+            {
+                SrcCell.Value = DstCell.Value;
+            }
+
+            MergeStatus = mergeStatus;
+        }
     }
 }

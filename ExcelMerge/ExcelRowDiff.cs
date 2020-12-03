@@ -58,7 +58,13 @@ namespace ExcelMerge
             get { return Cells.Count(c => c.Value.Status != ExcelCellStatus.None); }
         }
 
-
+        public void Merge(ExcelCellMergeStatus mergeStatus)
+        {
+            foreach (var cell in Cells.Values)
+            {
+                cell.Merge(mergeStatus);
+            }
+        }
         // TODO: Add row status field and implemnt UpdateStaus method.
     }
 }
