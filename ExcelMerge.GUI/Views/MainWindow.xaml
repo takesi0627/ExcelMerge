@@ -23,6 +23,7 @@
     </Window.Resources>
 
     <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding File_ExitCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Down" Command="{Binding Merge_NextModifiedRowCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Up" Command="{Binding Merge_PrevModifiedRowCommand}"/>
         <KeyBinding Modifiers="Ctrl" Key="Right" Command="{Binding Merge_NextModifiedColumnCommand}"/>
@@ -96,6 +97,9 @@
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_File_Exit}"
+                          Command="{Binding File_ExitCommand}"
+                          InputGestureText="Esc"/>
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Merge}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedRow}"

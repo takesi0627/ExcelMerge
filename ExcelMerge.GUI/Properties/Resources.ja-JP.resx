@@ -527,4 +527,7 @@
   <data name="MenuItem_Merge_PrevModifiedRow" xml:space="preserve">
     <value>前の差分（行）</value>
   </data>
+  <data name="MenuItem_File_Exit" xml:space="preserve">
+    <value>プログラムを終了</value>
+  </data>
 </root>

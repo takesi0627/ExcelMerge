@@ -527,4 +527,7 @@ If you don't want to apply file settings, enable "Ignore File Setting".</value>
   <data name="MenuItem_Merge_PrevModifiedRow" xml:space="preserve">
     <value>Previous Modified Row</value>
   </data>
+  <data name="MenuItem_File_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
 </root>

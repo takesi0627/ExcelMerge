@@ -73,6 +73,7 @@ namespace ExcelMerge.GUI.ViewModels
         public DelegateCommand OpenExternalCommandsWindowCommand { get; private set; }
         public DelegateCommand OpenFileSettingsWindowCommand { get; private set; }
         public DelegateCommand OpenDiffExtractionSettingsWindowCommand { get; private set; }
+        public DelegateCommand File_ExitCommand { get; private set; }
         public DelegateCommand<FileDialogParameter> OpenFileDialogCommand { get; private set; }
         public DelegateCommand<string> OpenAsSrcFileCommand { get; private set; }
         public DelegateCommand<string> OpenAsDstFileCommand { get; private set; }
@@ -100,6 +101,11 @@ namespace ExcelMerge.GUI.ViewModels
             OpenAsDstFileCommand = new DelegateCommand<string>(OpenAsDstFile);
             OpenFileSetCommand = new DelegateCommand<string>(OpenFileSet);
             ChangeLanguageCommand = new DelegateCommand<string>(ChangeLanguage);
+
+            File_ExitCommand = new DelegateCommand(() =>
+            {
+                App.Instance.Shutdown(0);
+            });
 
             Merge_NextModifiedRowCommand = new DelegateCommand(() => 
             {
