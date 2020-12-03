@@ -222,44 +222,45 @@ namespace ExcelMerge
                 }
             }
 
-            int index = 0;
-            if (isLeft)
-            {
-                foreach (var rowDiff in sheetDiff.Rows)
-                {
-                    if (rowDiff.Value.LeftEmpty())
-                    {
-                        Debug.Print("ShiftBackLeft: " + rowDiff.ToString());
-                        if (index + 1 < table.LastRowNum)
-                            table.ShiftRows(index+1, table.LastRowNum, -1);
-                    }
-                    else
-                    {
-                        index++;
-                    }
+            // @note: 空行を削除する処理？いらないのでコメントアウト
+            //int index = 0;
+            //if (isLeft)
+            //{
+            //    foreach (var rowDiff in sheetDiff.Rows)
+            //    {
+            //        if (rowDiff.Value.LeftEmpty())
+            //        {
+            //            Debug.Print("ShiftBackLeft: " + rowDiff.ToString());
+            //            if (index + 1 < table.LastRowNum)
+            //                table.ShiftRows(index+1, table.LastRowNum, -1);
+            //        }
+            //        else
+            //        {
+            //            index++;
+            //        }
 
-                }
-            }
-            else
-            {
-                foreach (var rowDiff in sheetDiff.Rows)
-                {
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (var rowDiff in sheetDiff.Rows)
+            //    {
 
-                    if (rowDiff.Value.RightEmpty())
-                    {
-                        Debug.Print("ShiftBackRight: " +  rowDiff.ToString());
-                        if (index + 1 < table.LastRowNum)
-                        {
-                            table.ShiftRows(index + 1, table.LastRowNum, -1);
-                        }
+            //        if (rowDiff.Value.RightEmpty())
+            //        {
+            //            Debug.Print("ShiftBackRight: " +  rowDiff.ToString());
+            //            if (index + 1 < table.LastRowNum)
+            //            {
+            //                //table.ShiftRows(index + 1, table.LastRowNum, -1);
+            //            }
                         
-                    }
-                    else
-                    {
-                        index++;
-                    }
-                }
-            }
+            //        }
+            //        else
+            //        {
+            //            index++;
+            //        }
+            //    }
+            //}
 
             if (tableModified)
             {
