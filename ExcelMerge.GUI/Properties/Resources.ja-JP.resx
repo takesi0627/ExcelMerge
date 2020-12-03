@@ -497,4 +497,13 @@
   <data name="ContextMenu_CopyAsTsv" xml:space="preserve">
     <value>TSV形式でコピー</value>
   </data>
+  <data name="ContextMenu_SaveAll" xml:space="preserve">
+    <value>変更を保存</value>
+  </data>
+  <data name="ContextMenu_CopyRowToAnother" xml:space="preserve">
+    <value>行ごとを向こう側にコピーする</value>
+  </data>
+  <data name="ContextMenu_CopyToAnother" xml:space="preserve">
+    <value>セルを向こう側にコピーする</value>
+  </data>
 </root>
