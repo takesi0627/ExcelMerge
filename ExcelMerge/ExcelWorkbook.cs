@@ -14,21 +14,15 @@ namespace ExcelMerge
 {
     public class ExcelWorkbook
     {
-        public Dictionary<string, ExcelSheet> Sheets { get; private set; }
+        public Dictionary<string, ExcelSheet> Sheets { get; private set; } = new Dictionary<string, ExcelSheet>();
 
-        public List<string> SheetNames { get; private set; }
+        public List<string> SheetNames { get; private set; } = new List<string>();
 
         private string rawFilePath;
 
         private XSSFWorkbook rawWorkbook;
 
         private string tmpFileName;
-
-        public ExcelWorkbook()
-        {
-            Sheets = new Dictionary<string, ExcelSheet>();
-            SheetNames = new List<string>();
-        }
 
         public static ExcelWorkbook Create(string path, ExcelSheetReadConfig config)
         {

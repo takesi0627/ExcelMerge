@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NPOI.SS.UserModel;
 
 namespace ExcelMerge
@@ -14,14 +15,11 @@ namespace ExcelMerge
                 if (row == null)
                     continue;
 
-                var cells = new List<ExcelCell>();
-                for (int columnIndex = 0; columnIndex < row.LastCellNum; columnIndex++)
+                var cells = row.Cells.Select(cell =>
                 {
-                    var cell = row.GetCell(columnIndex);
                     var stringValue = ExcelUtility.GetCellStringValue(cell);
-                    cells.Add(new ExcelCell(stringValue, columnIndex, rowIndex, cell));
-
-                }
+                    return new ExcelCell(stringValue, cell.ColumnIndex, cell.RowIndex, cell);
+                });
 
                 yield return new ExcelRow(actualRowIndex++, cells);
             }
