@@ -99,9 +99,11 @@
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Merge}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedRow}"
-                          Command="{Binding Merge_NextModifiedRowCommand}"/>
+                          Command="{Binding Merge_NextModifiedRowCommand}"
+                          InputGestureText="Alt+Down"/>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedRow}"
-                          Command="{Binding Merge_PrevModifiedRowCommand}"/>
+                          Command="{Binding Merge_PrevModifiedRowCommand}"
+                          InputGestureText="Alt+Up"/>
                 <!--<Separator BorderBrush="Aqua"></Separator>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedColumn}"
                           Command="{Binding Merge_NextModifiedColumnCommand}"/>
@@ -109,9 +111,11 @@
                           Command="{Binding Merge_PrevModifiedC}"/>-->
                 <Separator BorderBrush="Aqua"></Separator>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedCell}"
-                          Command="{Binding Merge_NextModifiedCellCommand}"/>
+                          Command="{Binding Merge_NextModifiedCellCommand}"
+                          InputGestureText="Alt+Ctrl+Down"/>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedCell}"
-                          Command="{Binding Merge_PrevModifiedCellCommand}"/>
+                          Command="{Binding Merge_PrevModifiedCellCommand}"
+                          InputGestureText="Alt+Ctrl+Up"/>
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Setting}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_GeneralSetting}"
