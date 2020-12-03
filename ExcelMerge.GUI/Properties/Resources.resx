@@ -506,4 +506,25 @@ If you don't want to apply file settings, enable "Ignore File Setting".</value>
   <data name="ContextMenu_CopyToAnother" xml:space="preserve">
     <value>复制到对面</value>
   </data>
+  <data name="MenuItem_Merge_NextModifiedRow" xml:space="preserve">
+    <value>Next Modified Row</value>
+  </data>
+  <data name="Word_Merge" xml:space="preserve">
+    <value>Merge</value>
+  </data>
+  <data name="MenuItem_Merge_NextModifiedCell" xml:space="preserve">
+    <value>Next Modified Cell</value>
+  </data>
+  <data name="MenuItem_Merge_NextModifiedColumn" xml:space="preserve">
+    <value>Next Modified Column</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedCell" xml:space="preserve">
+    <value>Previous Modified Cell</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedColumn" xml:space="preserve">
+    <value>Previous Modified Column</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedRow" xml:space="preserve">
+    <value>Previous Modified Row</value>
+  </data>
 </root>

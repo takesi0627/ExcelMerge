@@ -22,6 +22,15 @@
         <vc:CultureNameConverter x:Key="CultureNameConverter"/>
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Alt" Key="Down" Command="{Binding Merge_NextModifiedRowCommand}"/>
+        <KeyBinding Modifiers="Alt" Key="Up" Command="{Binding Merge_PrevModifiedRowCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="Right" Command="{Binding Merge_NextModifiedColumnCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="Left" Command="{Binding Merge_PrevModifiedColumnCommand}"/>
+        <KeyBinding Modifiers="Ctrl+Alt" Key="Down" Command="{Binding Merge_NextModifiedCellCommand}"/>
+        <KeyBinding Modifiers="Ctrl+Alt" Key="Up" Command="{Binding Merge_PrevModifiedCellCommand}"/>
+    </Window.InputBindings>
+    
     <Grid x:Name="MainGrid" ShowGridLines="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -87,6 +96,22 @@
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{x:Static props:Resources.Word_Merge}">
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedRow}"
+                          Command="{Binding Merge_NextModifiedRowCommand}"/>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedRow}"
+                          Command="{Binding Merge_PrevModifiedRowCommand}"/>
+                <!--<Separator BorderBrush="Aqua"></Separator>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedColumn}"
+                          Command="{Binding Merge_NextModifiedColumnCommand}"/>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedColumn}"
+                          Command="{Binding Merge_PrevModifiedC}"/>-->
+                <Separator BorderBrush="Aqua"></Separator>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedCell}"
+                          Command="{Binding Merge_NextModifiedCellCommand}"/>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedCell}"
+                          Command="{Binding Merge_PrevModifiedCellCommand}"/>
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Setting}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_GeneralSetting}"

@@ -78,6 +78,12 @@ namespace ExcelMerge.GUI.ViewModels
         public DelegateCommand<string> OpenAsDstFileCommand { get; private set; }
         public DelegateCommand<string> OpenFileSetCommand { get; private set; }
         public DelegateCommand<string> ChangeLanguageCommand{ get; private set; }
+        public DelegateCommand Merge_NextModifiedRowCommand { get; private set; }
+        public DelegateCommand Merge_PrevModifiedRowCommand { get; private set; }
+        public DelegateCommand Merge_NextModifiedColumnCommand { get; private set; }
+        public DelegateCommand Merge_PrevModifiedColumnCommand { get; private set; }
+        public DelegateCommand Merge_NextModifiedCellCommand { get; private set; }
+        public DelegateCommand Merge_PrevModifiedCellCommand { get; private set; }
 
         public MainWindowViewModel(ContentControl content)
         {
@@ -94,6 +100,31 @@ namespace ExcelMerge.GUI.ViewModels
             OpenAsDstFileCommand = new DelegateCommand<string>(OpenAsDstFile);
             OpenFileSetCommand = new DelegateCommand<string>(OpenFileSet);
             ChangeLanguageCommand = new DelegateCommand<string>(ChangeLanguage);
+
+            Merge_NextModifiedRowCommand = new DelegateCommand(() => 
+            {
+                DiffView diffView = Content as DiffView;
+                diffView.MoveNextModifiedRow();
+            });
+
+            Merge_PrevModifiedRowCommand = new DelegateCommand(() => {
+                DiffView diffView = Content as DiffView;
+                diffView.MovePrevModifiedRow();
+            });
+
+            Merge_NextModifiedCellCommand = new DelegateCommand(() =>
+            {
+                DiffView diffView = Content as DiffView;
+                diffView.MoveNextModifiedCell();
+            });
+
+            Merge_PrevModifiedCellCommand = new DelegateCommand(() =>
+            {
+                DiffView diffView = Content as DiffView;
+                diffView.MovePrevModifiedCell();
+            });
+
+            // TODO Move to prev/next modified column command
 
             App.Instance.Setting.PropertyChanged += Setting_PropertyChanged;
         }

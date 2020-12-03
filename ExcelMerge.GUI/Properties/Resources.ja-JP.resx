@@ -506,4 +506,25 @@
   <data name="ContextMenu_CopyToAnother" xml:space="preserve">
     <value>セルを向こう側にコピーする</value>
   </data>
+  <data name="MenuItem_Merge_NextModifiedRow" xml:space="preserve">
+    <value>次の差分（行）</value>
+  </data>
+  <data name="Word_Merge" xml:space="preserve">
+    <value>マージ</value>
+  </data>
+  <data name="MenuItem_Merge_NextModifiedCell" xml:space="preserve">
+    <value>次の差分（セル）</value>
+  </data>
+  <data name="MenuItem_Merge_NextModifiedColumn" xml:space="preserve">
+    <value>次の差分（列）</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedCell" xml:space="preserve">
+    <value>前の差分（セル）</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedColumn" xml:space="preserve">
+    <value>前の差分（列）</value>
+  </data>
+  <data name="MenuItem_Merge_PrevModifiedRow" xml:space="preserve">
+    <value>前の差分（行）</value>
+  </data>
 </root>

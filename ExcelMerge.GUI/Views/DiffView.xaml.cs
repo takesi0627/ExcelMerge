@@ -676,7 +676,7 @@ namespace ExcelMerge.GUI.Views
             MoveNextModifiedCell();
         }
 
-        private void MoveNextModifiedCell()
+        public void MoveNextModifiedCell()
         {
             if (!ValidateDataGrids())
                 return;
@@ -694,7 +694,7 @@ namespace ExcelMerge.GUI.Views
             MovePrevModifiedCell();
         }
 
-        private void MovePrevModifiedCell()
+        public void MovePrevModifiedCell()
         {
             if (!ValidateDataGrids())
                 return;
@@ -712,7 +712,7 @@ namespace ExcelMerge.GUI.Views
             MoveNextModifiedRow();
         }
 
-        private void MoveNextModifiedRow()
+        public void MoveNextModifiedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -730,7 +730,7 @@ namespace ExcelMerge.GUI.Views
             MovePrevModifiedRow();
         }
 
-        private void MovePrevModifiedRow()
+        public void MovePrevModifiedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -748,7 +748,7 @@ namespace ExcelMerge.GUI.Views
             MoveNextAddedRow();
         }
 
-        private void MoveNextAddedRow()
+        public void MoveNextAddedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -766,7 +766,7 @@ namespace ExcelMerge.GUI.Views
             MovePrevAddedRow();
         }
 
-        private void MovePrevAddedRow()
+        public void MovePrevAddedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -784,7 +784,7 @@ namespace ExcelMerge.GUI.Views
             MoveNextRemovedRow();
         }
 
-        private void MoveNextRemovedRow()
+        public void MoveNextRemovedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -802,7 +802,7 @@ namespace ExcelMerge.GUI.Views
             MovePrevRemovedRow();
         }
 
-        private void MovePrevRemovedRow()
+        public void MovePrevRemovedRow()
         {
             if (!ValidateDataGrids())
                 return;
@@ -907,42 +907,6 @@ namespace ExcelMerge.GUI.Views
         {
             switch (e.Key)
             {
-                case Key.Right:
-                    {
-                        if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        {
-                            MoveNextModifiedCell();
-                            e.Handled = true;
-                        }
-                    }
-                    break;
-                case Key.Left:
-                    {
-                        if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        {
-                            MovePrevModifiedCell();
-                            e.Handled = true;
-                        }
-                    }
-                    break;
-                case Key.Down:
-                    {
-                        if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        {
-                            MoveNextModifiedRow();
-                            e.Handled = true;
-                        }
-                    }
-                    break;
-                case Key.Up:
-                    {
-                        if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        {
-                            MovePrevModifiedRow();
-                            e.Handled = true;
-                        }
-                    }
-                    break;
                 case Key.L:
                     {
                         if (Keyboard.IsKeyDown(Key.LeftCtrl))
