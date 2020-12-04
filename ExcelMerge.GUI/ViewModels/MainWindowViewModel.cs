@@ -110,41 +110,6 @@ namespace ExcelMerge.GUI.ViewModels
                 App.Instance.Shutdown(0);
             });
 
-            Merge_NextModifiedRowCommand = new DelegateCommand(() => 
-            {
-                DiffView diffView = Content as DiffView;
-                diffView.MoveNextModifiedRow();
-            });
-
-            Merge_PrevModifiedRowCommand = new DelegateCommand(() => {
-                DiffView diffView = Content as DiffView;
-                diffView.MovePrevModifiedRow();
-            });
-
-            Merge_NextModifiedCellCommand = new DelegateCommand(() =>
-            {
-                DiffView diffView = Content as DiffView;
-                diffView.MoveNextModifiedCell();
-            });
-
-            Merge_PrevModifiedCellCommand = new DelegateCommand(() =>
-            {
-                DiffView diffView = Content as DiffView;
-                diffView.MovePrevModifiedCell();
-            });
-
-            Merge_CopyToRightCommand = new DelegateCommand(() =>
-            {
-                DiffView diffView = Content as DiffView;
-                diffView.CopyToRight();
-            });
-
-            Merge_CopyToLeftCommand = new DelegateCommand(() =>
-            {
-                DiffView diffView = Content as DiffView;
-                diffView.CopyToLeft();
-            });
-
             Edit_CopyCommand = new DelegateCommand(() =>
             {
                 DiffView diffView = Content as DiffView;
@@ -154,6 +119,18 @@ namespace ExcelMerge.GUI.ViewModels
             // TODO Move to prev/next modified column command
 
             App.Instance.Setting.PropertyChanged += Setting_PropertyChanged;
+        }
+
+        private void InitializeMergeMenu()
+        {
+            DiffView diffView = content as DiffView;
+
+            Merge_NextModifiedRowCommand = new DelegateCommand(diffView.MoveNextModifiedRow);
+            Merge_PrevModifiedRowCommand = new DelegateCommand(diffView.MovePrevModifiedRow);
+            Merge_NextModifiedCellCommand = new DelegateCommand(diffView.MoveNextModifiedCell);
+            Merge_PrevModifiedCellCommand = new DelegateCommand(diffView.MovePrevModifiedCell);
+            Merge_CopyToRightCommand = new DelegateCommand(diffView.CopyToRight);
+            Merge_CopyToLeftCommand = new DelegateCommand(diffView.CopyToLeft);
         }
 
         private void Setting_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
