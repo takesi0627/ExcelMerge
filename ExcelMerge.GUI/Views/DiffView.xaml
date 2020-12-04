@@ -302,17 +302,17 @@
 
       <fg:FastGridControl.ContextMenu>
         <ContextMenu>
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_SetRowHeader}" Click="SetRowHeader_Click" /> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_ResetRowHeader}" Click="ResetRowHeader_Click" /> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_SetColumnHeader}" Click="SetColumnHeader_Click" /> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_ResetColumnHeader}" Click="ResetColumnHeader_Click" /> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_DiffAsHeader}" Click="DiffByHeaderSrc_Click" /> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_BuildCellBaseLog}" Click="BuildCellBaseLog_Click"/> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsTsv}" Click="CopyAsTsv_Click" InputGestureText="Ctrl + c"/> -->
-          <!-- <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsCsv}" Click="CopyAsCsv_Click" InputGestureText="Ctrl + C"/> -->
-          <MenuItem Header="{x:Static props:Resources.ContextMenu_SaveAll}" Click="SaveAll_Click" />
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_SetRowHeader}" Click="SetRowHeader_Click" /> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_ResetRowHeader}" Click="ResetRowHeader_Click" /> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_SetColumnHeader}" Click="SetColumnHeader_Click" /> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_ResetColumnHeader}" Click="ResetColumnHeader_Click" /> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_DiffAsHeader}" Click="DiffByHeaderSrc_Click" /> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_BuildCellBaseLog}" Click="BuildCellBaseLog_Click"/> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsTsv}" Click="CopyAsTsv_Clicked"/> 
+           <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyAsCsv}" Click="CopyAsCsv_Clicked"/> 
+          <!--<MenuItem Header="{x:Static props:Resources.ContextMenu_SaveAll}" Click="SaveAll_Click" />
           <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyRowToAnother}" Click="CopyRow_Click" />
-          <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyToAnother}" Click="CopyToAnother_Click" />
+          <MenuItem Header="{x:Static props:Resources.ContextMenu_CopyToAnother}" Click="CopyToAnother_Click" />-->
         </ContextMenu>
       </fg:FastGridControl.ContextMenu>
 

@@ -885,7 +885,17 @@ namespace ExcelMerge.GUI.Views
             SrcDataGrid.CurrentCell = nextCell;
         }
 
-        private void CopyToClipboardSelectedCells(string separator)
+        private void CopyAsTsv_Clicked(object sender, RoutedEventArgs e)
+        {
+            CopySelectedCellsToClipboard("\t");
+        }
+
+        private void CopyAsCsv_Clicked(object sender, RoutedEventArgs e)
+        {
+            CopySelectedCellsToClipboard(",");
+        }
+
+        public void CopySelectedCellsToClipboard(string separator)
         {
             if (copyTargetGrid == null)
                 return;
@@ -961,15 +971,6 @@ namespace ExcelMerge.GUI.Views
                         {
                             ToolExpander.IsExpanded = true;
                             SearchTextCombobox.Focus();
-                            e.Handled = true;
-                        }
-                    }
-                    break;
-                case Key.C:
-                    {
-                        if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        {
-                            CopyToClipboardSelectedCells(Keyboard.IsKeyDown(Key.RightShift) || Keyboard.IsKeyDown(Key.LeftShift) ? "," : "\t");
                             e.Handled = true;
                         }
                     }

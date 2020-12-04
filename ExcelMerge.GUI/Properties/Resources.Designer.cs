@@ -556,6 +556,15 @@ namespace ExcelMerge.GUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string MenuItem_Edit_Copy {
+            get {
+                return ResourceManager.GetString("MenuItem_Edit_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Execute external command.
         /// </summary>
         public static string MenuItem_ExeExternalCmd {

@@ -536,4 +536,7 @@
   <data name="MenuItem_Merge_CopyToLeft" xml:space="preserve">
     <value>左側にコピー</value>
   </data>
+  <data name="MenuItem_Edit_Copy" xml:space="preserve">
+    <value>コピー</value>
+  </data>
 </root>

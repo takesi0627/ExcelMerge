@@ -1,4 +1,4 @@
-﻿<Window x:Class="ExcelMerge.GUI.Views.MainWindow"
+<Window x:Class="ExcelMerge.GUI.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -32,6 +32,7 @@
         <KeyBinding Modifiers="Ctrl+Alt" Key="Up" Command="{Binding Merge_PrevModifiedCellCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Right" Command="{Binding Merge_CopyToRightCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Left" Command="{Binding Merge_CopyToLeftCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="C" Command="{Binding Edit_CopyCommand}"/>
     </Window.InputBindings>
     
     <Grid x:Name="MainGrid" ShowGridLines="False">
@@ -102,6 +103,11 @@
                 <MenuItem Header="{x:Static props:Resources.MenuItem_File_Exit}"
                           Command="{Binding File_ExitCommand}"
                           InputGestureText="Esc"/>
+            </MenuItem>
+            <MenuItem Header="{x:Static props:Resources.Word_Edit}">
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Edit_Copy}"
+                          Command="{Binding Edit_CopyCommand}"
+                          InputGestureText="Ctrl+C"/>
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Merge}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_NextModifiedRow}"
