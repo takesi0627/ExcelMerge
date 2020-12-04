@@ -117,14 +117,12 @@ You can customize background colors.
 
 |Shortcut Key|Description|
 |---|-----------|
-|Ctrl + →|Next modified cell|
-|Ctrl + ←|Previous modified cell|
-|Ctrl + ↓|Next modified row|
-|Ctrl + ↑|Previous modified row|
-|Ctrl + K|Next added row|
-|Ctrl + I|Previous added row|
-|Ctrl + L|Next removed row|
-|Ctrl + O|Previous removed row|
+|Ctrl + Alt + →|Next modified cell|
+|Ctrl + Alt + ←|Previous modified cell|
+|Alt + ↓|Next modified row|
+|Alt + ↑|Previous modified row|
+|Alt + →|Copy selected cells to right|
+|Alt + ←|Copy selected cells to left|
 |Ctrl + F|Search cell|
 |F9|Next match cell|
 |F8|Previous match cell|
