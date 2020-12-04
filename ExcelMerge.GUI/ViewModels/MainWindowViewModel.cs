@@ -85,6 +85,8 @@ namespace ExcelMerge.GUI.ViewModels
         public DelegateCommand Merge_PrevModifiedColumnCommand { get; private set; }
         public DelegateCommand Merge_NextModifiedCellCommand { get; private set; }
         public DelegateCommand Merge_PrevModifiedCellCommand { get; private set; }
+        public DelegateCommand Merge_CopyToLeftCommand { get; private set; }
+        public DelegateCommand Merge_CopyToRightCommand { get; private set; }
 
         public MainWindowViewModel(ContentControl content)
         {
@@ -128,6 +130,18 @@ namespace ExcelMerge.GUI.ViewModels
             {
                 DiffView diffView = Content as DiffView;
                 diffView.MovePrevModifiedCell();
+            });
+
+            Merge_CopyToRightCommand = new DelegateCommand(() =>
+            {
+                DiffView diffView = Content as DiffView;
+                diffView.CopyToRight();
+            });
+
+            Merge_CopyToLeftCommand = new DelegateCommand(() =>
+            {
+                DiffView diffView = Content as DiffView;
+                diffView.CopyToLeft();
             });
 
             // TODO Move to prev/next modified column command

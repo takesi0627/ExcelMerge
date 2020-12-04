@@ -530,4 +530,10 @@
   <data name="MenuItem_File_Exit" xml:space="preserve">
     <value>プログラムを終了</value>
   </data>
+  <data name="MenuItem_Merge_CopyToRight" xml:space="preserve">
+    <value>右側にコピー</value>
+  </data>
+  <data name="MenuItem_Merge_CopyToLeft" xml:space="preserve">
+    <value>左側にコピー</value>
+  </data>
 </root>

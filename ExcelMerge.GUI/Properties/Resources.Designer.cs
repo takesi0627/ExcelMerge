@@ -601,6 +601,24 @@ namespace ExcelMerge.GUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy To Left.
+        /// </summary>
+        public static string MenuItem_Merge_CopyToLeft {
+            get {
+                return ResourceManager.GetString("MenuItem_Merge_CopyToLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy To Right.
+        /// </summary>
+        public static string MenuItem_Merge_CopyToRight {
+            get {
+                return ResourceManager.GetString("MenuItem_Merge_CopyToRight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Next Modified Cell.
         /// </summary>
         public static string MenuItem_Merge_NextModifiedCell {

@@ -47,5 +47,29 @@ namespace ExcelMerge
                 ModifiedCellCount = modifiedCellCount,
             };
         }
+
+        public ExcelCellDiff GetCell(int row, int col)
+        {
+            if (!Rows.ContainsKey(row) || !Rows[row].Cells.ContainsKey(col))
+                return null;
+
+            return Rows[row].Cells[col];
+        }
+
+        public void Merge(IEnumerable<int> rows, ExcelCellMergeStatus mergeStatus)
+        {
+            foreach (var row in rows)
+            {
+                Merge(row, mergeStatus);
+            }
+        }
+
+        public void Merge(int row, ExcelCellMergeStatus mergeStatus)
+        {
+            if (!Rows.ContainsKey(row))
+                return;
+
+            Rows[row].Merge(mergeStatus);
+        }
     }
 }

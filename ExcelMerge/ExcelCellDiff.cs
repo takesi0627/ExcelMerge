@@ -47,6 +47,7 @@
             }
 
             MergeStatus = mergeStatus;
+            Status = ExcelCellStatus.None;
         }
     }
 }

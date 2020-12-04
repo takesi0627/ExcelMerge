@@ -30,6 +30,8 @@
         <KeyBinding Modifiers="Ctrl" Key="Left" Command="{Binding Merge_PrevModifiedColumnCommand}"/>
         <KeyBinding Modifiers="Ctrl+Alt" Key="Down" Command="{Binding Merge_NextModifiedCellCommand}"/>
         <KeyBinding Modifiers="Ctrl+Alt" Key="Up" Command="{Binding Merge_PrevModifiedCellCommand}"/>
+        <KeyBinding Modifiers="Alt" Key="Right" Command="{Binding Merge_CopyToRightCommand}"/>
+        <KeyBinding Modifiers="Alt" Key="Left" Command="{Binding Merge_CopyToLeftCommand}"/>
     </Window.InputBindings>
     
     <Grid x:Name="MainGrid" ShowGridLines="False">
@@ -120,6 +122,13 @@
                 <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_PrevModifiedCell}"
                           Command="{Binding Merge_PrevModifiedCellCommand}"
                           InputGestureText="Alt+Ctrl+Up"/>
+                <Separator BorderBrush="Aqua"></Separator>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_CopyToRight}"
+                          Command="{Binding Merge_CopyToRightCommand}"
+                          InputGestureText="Alt+Right"/>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_Merge_CopyToLeft}"
+                          Command="{Binding Merge_CopyToLeftCommand}"
+                          InputGestureText="Alt+Left"/>
             </MenuItem>
             <MenuItem Header="{x:Static props:Resources.Word_Setting}">
                 <MenuItem Header="{x:Static props:Resources.MenuItem_GeneralSetting}"

@@ -530,4 +530,10 @@ If you don't want to apply file settings, enable "Ignore File Setting".</value>
   <data name="MenuItem_File_Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
+  <data name="MenuItem_Merge_CopyToLeft" xml:space="preserve">
+    <value>Copy To Left</value>
+  </data>
+  <data name="MenuItem_Merge_CopyToRight" xml:space="preserve">
+    <value>Copy To Right</value>
+  </data>
 </root>

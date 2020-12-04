@@ -1094,6 +1094,34 @@ namespace ExcelMerge.GUI.Views
             RightWorkbook.Dump(SheetName, SheetDiff, false);
         }
 
+        public void CopyToRight()
+        {
+            foreach (var cell in SrcDataGrid.SelectedCells)
+            {
+                if (cell.Row.HasValue && cell.Column.HasValue)
+                {
+                    SheetDiff.GetCell(cell.Row.Value, cell.Column.Value)?.Merge(ExcelCellMergeStatus.UseLeft);
+                }
+            }
+
+            RefreshBySheet(false, true);
+            UpdateLayout();
+        }
+
+        public void CopyToLeft()
+        {
+            foreach (var cell in DstDataGrid.SelectedCells)
+            {
+                if (cell.Row.HasValue && cell.Column.HasValue)
+                {
+                    SheetDiff.GetCell(cell.Row.Value, cell.Column.Value)?.Merge(ExcelCellMergeStatus.UseRight);
+                }
+            }
+
+            RefreshBySheet(false, true);
+            UpdateLayout();
+        }
+
         private void CopyRow_Click(object sender, RoutedEventArgs e)
         {
             // 复制整行
@@ -1121,12 +1149,12 @@ namespace ExcelMerge.GUI.Views
                 if (diffType == DiffType.Source)
                 {
                     // 左から右へマージ
-                    SheetDiff.Rows[row.Value].Merge(ExcelCellMergeStatus.UseLeft);
+                    SheetDiff.Merge(row.Value, ExcelCellMergeStatus.UseLeft);
                 }
                 else
                 {
                     // 右から左へマージ
-                    SheetDiff.Rows[row.Value].Merge(ExcelCellMergeStatus.UseRight);
+                    SheetDiff.Merge(row.Value, ExcelCellMergeStatus.UseRight);
                 }
 
                 RefreshBySheet(false, true);
