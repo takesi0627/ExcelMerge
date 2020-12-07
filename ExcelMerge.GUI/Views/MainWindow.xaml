@@ -24,6 +24,7 @@
 
     <Window.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding File_ExitCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding File_SaveCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Down" Command="{Binding Merge_NextModifiedRowCommand}"/>
         <KeyBinding Modifiers="Alt" Key="Up" Command="{Binding Merge_PrevModifiedRowCommand}"/>
         <KeyBinding Modifiers="Ctrl" Key="Right" Command="{Binding Merge_NextModifiedColumnCommand}"/>
@@ -70,6 +71,12 @@
                         </MultiBinding>
                     </MenuItem.CommandParameter>
                 </MenuItem>
+                <Separator BorderBrush="Aqua"></Separator>
+                <MenuItem Header="{x:Static props:Resources.MenuItem_File_Save}"
+                          Command="{Binding File_SaveCommand}"
+                          InputGestureText="Ctrl+S">
+                </MenuItem>
+                <Separator BorderBrush="Aqua"></Separator>
                 <MenuItem Header="{x:Static props:Resources.MenuItem_RecentFiles}" 
                           ItemsSource="{Binding RecentFiles}" >
                     <MenuItem.ItemTemplate>

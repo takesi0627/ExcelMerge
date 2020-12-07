@@ -592,6 +592,15 @@ namespace ExcelMerge.GUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string MenuItem_File_Save {
+            get {
+                return ResourceManager.GetString("MenuItem_File_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File Settings.
         /// </summary>
         public static string MenuItem_FileSettings {

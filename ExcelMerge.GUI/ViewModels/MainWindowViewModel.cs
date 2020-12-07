@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -74,6 +74,7 @@ namespace ExcelMerge.GUI.ViewModels
         public DelegateCommand OpenFileSettingsWindowCommand { get; private set; }
         public DelegateCommand OpenDiffExtractionSettingsWindowCommand { get; private set; }
         public DelegateCommand File_ExitCommand { get; private set; }
+        public DelegateCommand File_SaveCommand { get; private set; }
         public DelegateCommand<FileDialogParameter> OpenFileDialogCommand { get; private set; }
         public DelegateCommand<string> OpenAsSrcFileCommand { get; private set; }
         public DelegateCommand<string> OpenAsDstFileCommand { get; private set; }
@@ -105,20 +106,30 @@ namespace ExcelMerge.GUI.ViewModels
             OpenFileSetCommand = new DelegateCommand<string>(OpenFileSet);
             ChangeLanguageCommand = new DelegateCommand<string>(ChangeLanguage);
 
-            File_ExitCommand = new DelegateCommand(() =>
-            {
-                App.Instance.Shutdown(0);
-            });
-
             Edit_CopyCommand = new DelegateCommand(() =>
             {
                 DiffView diffView = Content as DiffView;
                 diffView.CopySelectedCellsToClipboard(",");
             });
 
-            // TODO Move to prev/next modified column command
+            InitializeFileMenu();
+            InitializeMergeMenu();
 
             App.Instance.Setting.PropertyChanged += Setting_PropertyChanged;
+        }
+
+        private void InitializeFileMenu()
+        {
+            File_ExitCommand = new DelegateCommand(() =>
+            {
+                App.Instance.Shutdown(0);
+            });
+
+            File_SaveCommand = new DelegateCommand(() =>
+            {
+                DiffView diffView = content as DiffView;
+                diffView.SaveAll();
+            });
         }
 
         private void InitializeMergeMenu()

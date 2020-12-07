@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1091,8 +1091,15 @@ namespace ExcelMerge.GUI.Views
         private void SaveAll_Click(object sender, RoutedEventArgs e)
         {
             // 全部保存
+            SaveAll();
+        }
+
+        public void SaveAll()
+        {
             LeftWorkbook.Dump(SheetName, SheetDiff, true);
             RightWorkbook.Dump(SheetName, SheetDiff, false);
+            //LeftWorkbook.Dump();
+            //RightWorkbook.Dump();
         }
 
         public void CopyToRight()

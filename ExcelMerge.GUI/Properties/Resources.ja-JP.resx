@@ -539,4 +539,7 @@
   <data name="MenuItem_Edit_Copy" xml:space="preserve">
     <value>コピー</value>
   </data>
+  <data name="MenuItem_File_Save" xml:space="preserve">
+    <value>保存する</value>
+  </data>
 </root>
