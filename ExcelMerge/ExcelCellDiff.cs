@@ -39,11 +39,11 @@
 
             if (mergeStatus == ExcelCellMergeStatus.UseLeft)
             {
-                DstCell.Value = SrcCell.Value;
+                DstCell.OverwriteValueBy(SrcCell);
             }
             else if (mergeStatus == ExcelCellMergeStatus.UseRight)
             {
-                SrcCell.Value = DstCell.Value;
+                SrcCell.OverwriteValueBy(DstCell);
             }
 
             MergeStatus = mergeStatus;

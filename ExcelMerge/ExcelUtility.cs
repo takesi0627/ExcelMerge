@@ -171,5 +171,37 @@ namespace ExcelMerge
                 return false;
             }
         }
+
+        public static void CloneRawCell(ICell src, ref ICell dst)
+        {
+            if (dst == null || src == null)
+                return;
+
+            dst.SetCellType(src.CellType);
+            switch (dst.CellType)
+            {
+                case CellType.Formula:
+                    dst.SetCellFormula(src.CellFormula);
+                    break;
+                case CellType.Numeric:
+                    dst.SetCellValue(src.NumericCellValue);
+                    break;
+                case CellType.Unknown:
+                case CellType.String:
+                    dst.SetCellValue(src.StringCellValue);
+                    break;
+                case CellType.Boolean:
+                    dst.SetCellValue(src.BooleanCellValue);
+                    break;
+                case CellType.Error:
+                    dst.SetCellValue(src.ErrorCellValue);
+                    break;
+                case CellType.Blank:
+                default:
+                    break;
+            }
+
+            dst.CellStyle.CloneStyleFrom(src.CellStyle);
+        }
     }
 }
