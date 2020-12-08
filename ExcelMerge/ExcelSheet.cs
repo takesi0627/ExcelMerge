@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NPOI.SS.UserModel;
@@ -11,9 +11,26 @@ namespace ExcelMerge
     {
         public SortedDictionary<int, ExcelRow> Rows { get; private set; }
 
-        public ExcelSheet()
+        public ExcelSheet(IEnumerable<ExcelRow> rows, ExcelSheetReadConfig config)
         {
             Rows = new SortedDictionary<int, ExcelRow>();
+
+            foreach (var row in rows)
+            {
+                Rows.Add(row.Index, row);
+            }
+
+            if (config.TrimFirstBlankRows)
+                TrimFirstBlankRows();
+
+            if (config.TrimFirstBlankColumns)
+                TrimFirstBlankColumns();
+
+            if (config.TrimLastBlankRows)
+                TrimLastBlankRows();
+
+            if (config.TrimLastBlankColumns)
+                TrimLastBlankColumns();
         }
 
         public static ExcelSheet Create(ISheet srcSheet, ExcelSheetReadConfig config)
@@ -39,21 +56,7 @@ namespace ExcelMerge
 
         private static ExcelSheet CreateSheet(IEnumerable<ExcelRow> rows, ExcelSheetReadConfig config)
         {
-            var sheet = CreateSheet(rows);
-
-            if (config.TrimFirstBlankRows)
-                sheet.TrimFirstBlankRows();
-
-            if (config.TrimFirstBlankColumns)
-                sheet.TrimFirstBlankColumns();
-
-            if (config.TrimLastBlankRows)
-                sheet.TrimLastBlankRows();
-
-            if (config.TrimLastBlankColumns)
-                sheet.TrimLastBlankColumns();
-
-            return sheet;
+            return new ExcelSheet(rows, config);
         }
 
         public void SetCell(int row, int col, string value)
@@ -112,17 +115,6 @@ namespace ExcelMerge
                 if (row.Value.Cells.Count > column)
                     row.Value.Cells.RemoveAt(column);
             }
-        }
-
-        private static ExcelSheet CreateSheet(IEnumerable<ExcelRow> rows)
-        {
-            var sheet = new ExcelSheet();
-            foreach (var row in rows)
-            {
-                sheet.Rows.Add(row.Index, row);
-            }
-
-            return sheet;
         }
 
         public static ExcelSheetDiff Diff(ExcelSheet src, ExcelSheet dst, ExcelSheetDiffConfig config)
