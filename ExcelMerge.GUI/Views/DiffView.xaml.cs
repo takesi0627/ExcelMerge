@@ -1162,13 +1162,6 @@ namespace ExcelMerge.GUI.Views
             }
         }
 
-        private void CopyColumn_Click(object sender, RoutedEventArgs e)
-        {
-            // 复制整列
-            LeftWorkbook.Dump(srcSheetName, SheetDiff, true);
-            RightWorkbook.Dump(dstSheetName, SheetDiff, false);
-        }
-
         private void CopyToAnother_Click(object sender, RoutedEventArgs e)
         {
             // 复制到对面
