@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ExcelMerge
 {
@@ -10,7 +11,7 @@ namespace ExcelMerge
     {
         public Dictionary<string, ExcelSheet> Sheets { get; private set; } = new Dictionary<string, ExcelSheet>();
 
-        public List<string> SheetNames { get; private set; } = new List<string>();
+        public List<string> SheetNames { get => Sheets.Keys.ToList(); }
 
         protected string rawFilePath;
 
@@ -97,7 +98,6 @@ namespace ExcelMerge
             {
                 var srcSheet = rawWorkbook.GetSheetAt(i);
                 Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
-                SheetNames.Add(srcSheet.SheetName);
             }
         }
 
