@@ -1,103 +1,107 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using NetDiff;
-using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Diagnostics;
-using NPOI.OpenXmlFormats.Dml.WordProcessing;
-
 
 namespace ExcelMerge
 {
-    public class ExcelWorkbook
+    public abstract class ExcelWorkbook
     {
         public Dictionary<string, ExcelSheet> Sheets { get; private set; } = new Dictionary<string, ExcelSheet>();
 
         public List<string> SheetNames { get; private set; } = new List<string>();
 
-        private string rawFilePath;
+        protected string rawFilePath;
 
-        private XSSFWorkbook rawWorkbook;
 
-        private string tmpFileName;
+        public ExcelWorkbook(string path)
+        {
+            rawFilePath = path;
+        }
 
         public static ExcelWorkbook Create(string path, ExcelSheetReadConfig config)
         {
+            var ext = Path.GetExtension(path);
+            if (ext == ".csv" || ext == ".tsv")
+            {
+                return new SVWorkbook(path, config);
+            }
+            else if (ext == ".xlsx" || ext == ".xlsm")
+            {
+                return new XLSWorkbook(path, config);
+            }
+            else
+            {
+                Debug.Assert(false, $"Invalid file type: {ext}");
+                return null;
+            }
+        }
+
+        public abstract void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft);
+
+        public static IEnumerable<string> GetSheetNames(string path)
+        {
             if (Path.GetExtension(path) == ".csv")
-                return CreateFromCsv(path, config);
+            {
+                yield return System.IO.Path.GetFileName(path);
+            }
+            else if (Path.GetExtension(path) == ".tsv")
+            {
+                yield return System.IO.Path.GetFileName(path);
+            }
+            else
+            {
+                var wb = WorkbookFactory.Create(path);
+                for (int i = 0; i < wb.NumberOfSheets; i++)
+                    yield return wb.GetSheetAt(i).SheetName;
+            }
+        }
+    }
 
-            if (Path.GetExtension(path) == ".tsv")
-                return CreateFromTsv(path, config);
+    internal class SVWorkbook : ExcelWorkbook
+    {
+        IList<IList<string>> values;
 
+        internal SVWorkbook(string path, ExcelSheetReadConfig config) : base (path)
+        {
+            var extension = Path.GetExtension(path);
+            if (extension == ".csv")
+                Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromCsv(path, config));
+            else if (extension == ".tsv")
+                Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromTsv(path, config));
+            else
+            {
+                Debug.Assert(false, $"Invalid file type: {extension}");
+            }
+        }
+
+        public override void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft)
+        {
+
+        }
+    }
+
+    internal class XLSWorkbook : ExcelWorkbook
+    {
+        private XSSFWorkbook rawWorkbook;
+
+        internal XLSWorkbook(string path, ExcelSheetReadConfig config) : base (path)
+        {
             string tmpFile = Path.GetTempFileName();
             File.Copy(path, tmpFile, true);
 
-            var srcWb = new XSSFWorkbook(tmpFile);
-            var wb = new ExcelWorkbook();
+            rawWorkbook = new XSSFWorkbook(tmpFile);
 
-            wb.rawFilePath = path;
-            wb.rawWorkbook = srcWb;
-
-            for (int i = 0; i < srcWb.NumberOfSheets; i++)
+            for (int i = 0; i < rawWorkbook.NumberOfSheets; i++)
             {
-                var srcSheet = srcWb.GetSheetAt(i);
-                wb.Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
-                wb.SheetNames.Add(srcSheet.SheetName);
+                var srcSheet = rawWorkbook.GetSheetAt(i);
+                Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
+                SheetNames.Add(srcSheet.SheetName);
             }
-
-            return wb;
         }
 
-        // public void DumpByCreate()
-        // {
-        //     // 尝试直接通过封装的数据来创建出原始 excel 表，比较冒险，可能有缺少的内容导致写入的 excel 错误
-        //     // 但是这样写入成功之后，界面操作修改都会变得简单
-        //     var wb = new XSSFWorkbook();
-        //
-        //     foreach (var sheetName in SheetNames)
-        //     {
-        //         var table = wb.CreateSheet(sheetName);
-        //
-        //         var sheetWrap = Sheets[sheetName];
-        //
-        //         foreach (var rowWrap in sheetWrap.Rows)
-        //         {
-        //             var row = table.CreateRow(rowWrap.Key);
-        //
-        //             // if (row is null)
-        //             // {
-        //             //     break;
-        //             // }
-        //
-        //             var i = 0;
-        //             foreach (var cellWrap in rowWrap.Value.Cells)
-        //             {
-        //                 var cell = row.CreateCell(i);
-        //                 // var cell = row.GetCell(i, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-        //
-        //                 XSSFCellStyle cellstyle = wb.CreateCellStyle() as XSSFCellStyle;
-        //                 if (cellWrap.OriginalCellStyle != null)
-        //                 {
-        //                     cellstyle.CloneStyleFrom(cellWrap.OriginalCellStyle);
-        //                 }
-        //                 
-        //                 cell.CellStyle = cellstyle;
-        //                 cell.SetCellValue(cellWrap.Value);
-        //                 i++;
-        //             }
-        //         }
-        //     }
-        //
-        //     using (FileStream stream = new FileStream(@"D:/test.xlsx", FileMode.Create, FileAccess.Write))
-        //     {
-        //         wb.Write(stream);
-        //     }
-        // }
-
-        public void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft)
+        public override void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft)
         {
             var workbook = rawWorkbook;
 
@@ -115,7 +119,7 @@ namespace ExcelMerge
                         Debug.Print("ShiftAddRight : " + sheetDiffRow.ToString());
                         table.ShiftRows(sheetDiffRow.Key, table.LastRowNum, 1);
                     }
-                    
+
                     table.CreateRow(sheetDiffRow.Key);
                 }
 
@@ -147,7 +151,7 @@ namespace ExcelMerge
                 {
                     continue;
                 }
-            
+
                 var rawRow = table.GetRow(rowDiff.Key) ?? table.CreateRow(rowDiff.Key);
 
                 foreach (var cellDiff in rowDiff.Value.Cells)
@@ -163,12 +167,10 @@ namespace ExcelMerge
                     }
                     else
                     {
-                        
                         if (cellDiff.Value.MergeStatus == ExcelCellMergeStatus.UseLeft)
                         {
                             targetWrap = cellDiff.Value.SrcCell;
                         }
-                            
                     }
 
                     if (targetWrap != null)
@@ -180,7 +182,6 @@ namespace ExcelMerge
                             style.CloneStyleFrom(targetWrap.RawCell.CellStyle);
                             rawCell.CellStyle = style;
                             rawCell.SetCellType(targetWrap.RawCell.CellType);
-
 
                             switch (targetWrap.RawCell.CellType)
                             {
@@ -206,55 +207,13 @@ namespace ExcelMerge
                                     rawCell.SetCellValue(targetWrap.Value);
                                     break;
                             }
-
-                            
                         }
 
                         tableModified = true;
                     }
-                    
+
                 }
             }
-
-            // @note: 空行を削除する処理？いらないのでコメントアウト
-            //int index = 0;
-            //if (isLeft)
-            //{
-            //    foreach (var rowDiff in sheetDiff.Rows)
-            //    {
-            //        if (rowDiff.Value.LeftEmpty())
-            //        {
-            //            Debug.Print("ShiftBackLeft: " + rowDiff.ToString());
-            //            if (index + 1 < table.LastRowNum)
-            //                table.ShiftRows(index+1, table.LastRowNum, -1);
-            //        }
-            //        else
-            //        {
-            //            index++;
-            //        }
-
-            //    }
-            //}
-            //else
-            //{
-            //    foreach (var rowDiff in sheetDiff.Rows)
-            //    {
-
-            //        if (rowDiff.Value.RightEmpty())
-            //        {
-            //            Debug.Print("ShiftBackRight: " +  rowDiff.ToString());
-            //            if (index + 1 < table.LastRowNum)
-            //            {
-            //                //table.ShiftRows(index + 1, table.LastRowNum, -1);
-            //            }
-                        
-            //        }
-            //        else
-            //        {
-            //            index++;
-            //        }
-            //    }
-            //}
 
             if (tableModified)
             {
@@ -263,42 +222,7 @@ namespace ExcelMerge
                     workbook.Write(stream);
                 }
             }
-            
-
-        }
-
-        public static IEnumerable<string> GetSheetNames(string path)
-        {
-            if (Path.GetExtension(path) == ".csv")
-            {
-                yield return System.IO.Path.GetFileName(path);
-            }
-            else if (Path.GetExtension(path) == ".tsv")
-            {
-                yield return System.IO.Path.GetFileName(path);
-            }
-            else
-            {
-                var wb = WorkbookFactory.Create(path);
-                for (int i = 0; i < wb.NumberOfSheets; i++)
-                    yield return wb.GetSheetAt(i).SheetName;
-            }
-        }
-
-        private static ExcelWorkbook CreateFromCsv(string path, ExcelSheetReadConfig config)
-        {
-            var wb = new ExcelWorkbook();
-            wb.Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromCsv(path, config));
-
-            return wb;
-        }
-
-        private static ExcelWorkbook CreateFromTsv(string path, ExcelSheetReadConfig config)
-        {
-            var wb = new ExcelWorkbook();
-            wb.Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromTsv(path, config));
-
-            return wb;
         }
     }
+
 }
