@@ -424,7 +424,7 @@ namespace ExcelMerge.GUI.Views
             ProgressWindow.DoWorkWithModal(progress =>
             {
                 progress.Report(Properties.Resources.Msg_ExtractingDiff);
-                diff = ExcelSheet.Diff(srcSheet, dstSheet, diffConfig);
+                diff = ExcelSheetDiff.Diff(srcSheet, dstSheet, diffConfig);
             });
 
             return diff;
@@ -467,11 +467,9 @@ namespace ExcelMerge.GUI.Views
             if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
                 MessageBox.Show(Properties.Resources.Msg_WarnSize);
 
-            var diff = ExecuteDiff(srcSheet, dstSheet);
-            SheetDiff = diff;
+            SheetDiff = ExecuteDiff(srcSheet, dstSheet);
 
             RefreshBySheet(isStartup);
-            
         }
 
         private void RefreshBySheet(bool isStartup, bool edit = false)
@@ -1100,7 +1098,7 @@ namespace ExcelMerge.GUI.Views
             {
                 if (cell.Row.HasValue && cell.Column.HasValue)
                 {
-                    SheetDiff.GetCell(cell.Row.Value, cell.Column.Value)?.Merge(ExcelCellMergeStatus.UseLeft);
+                    SheetDiff.Merge(cell.Row.Value, cell.Column.Value, ExcelCellMergeStatus.UseLeft);
                 }
             }
 
@@ -1114,7 +1112,7 @@ namespace ExcelMerge.GUI.Views
             {
                 if (cell.Row.HasValue && cell.Column.HasValue)
                 {
-                    SheetDiff.GetCell(cell.Row.Value, cell.Column.Value)?.Merge(ExcelCellMergeStatus.UseRight);
+                    SheetDiff.Merge(cell.Row.Value, cell.Column.Value, ExcelCellMergeStatus.UseRight);
                 }
             }
 

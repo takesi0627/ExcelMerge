@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NPOI.SS.UserModel;
 
@@ -22,6 +23,23 @@ namespace ExcelMerge
                 });
 
                 yield return new ExcelRow(actualRowIndex++, cells);
+            }
+        }
+
+        internal static IEnumerable<ExcelRow> Read(string path)
+        {
+            var ext = Path.GetExtension(path);
+            if (ext == ".csv")
+            {
+                return CsvReader.Read(path);
+            }
+            else if (ext == ".tsv")
+            {
+                return CsvReader.Read(path);
+            }
+            else
+            {
+                return new List<ExcelRow>();
             }
         }
     }
