@@ -1086,10 +1086,8 @@ namespace ExcelMerge.GUI.Views
 
         public void SaveAll()
         {
-            LeftWorkbook.Dump(srcSheetName, SheetDiff, true);
-            RightWorkbook.Dump(dstSheetName, SheetDiff, false);
-            //LeftWorkbook.Dump();
-            //RightWorkbook.Dump();
+            LeftWorkbook.Save();
+            RightWorkbook.Save();
         }
 
         public void CopyToRight()
