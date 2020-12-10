@@ -178,12 +178,11 @@ namespace ExcelMerge
     {
         public SVExcelSheet(string path, ExcelSheetReadConfig config) : base(ExcelReader.Read(path), config)
         {
-
         }
 
         public override string GetCellValue(int row, int col)
         {
-            throw new NotImplementedException();
+            return Rows[row].Cells[col].Value;
         }
     }
 }

@@ -4,6 +4,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace ExcelMerge
 {
@@ -14,7 +15,6 @@ namespace ExcelMerge
         public List<string> SheetNames { get => Sheets.Keys.ToList(); }
 
         protected string rawFilePath;
-
 
         public ExcelWorkbook(string path)
         {
@@ -62,8 +62,6 @@ namespace ExcelMerge
 
     internal class SVWorkbook : ExcelWorkbook
     {
-        IList<IList<string>> values;
-
         internal SVWorkbook(string path, ExcelSheetReadConfig config) : base (path)
         {
             Sheets.Add(Path.GetFileName(path), new SVExcelSheet(path, config));
@@ -71,7 +69,32 @@ namespace ExcelMerge
 
         public override void Save()
         {
-            throw new System.NotImplementedException();
+            var filename = Path.GetFileName(rawFilePath);
+
+            var sheet = Sheets[filename] as SVExcelSheet;
+            // skip if this sheet is not edited
+            if (!sheet.IsDirty)
+            {
+                return;
+            }
+
+            var ext = Path.GetExtension(rawFilePath);
+            var sep = ext == ".csv" ? "," : "\t";
+            var nl = System.Environment.NewLine;
+            var maxRow = sheet.Rows.Keys.Max();
+
+            string output = "";
+            foreach (var row in sheet.Rows.Values)
+            {
+                output += string.Join(sep, row.Cells.Select(c => c.Value)) + nl;
+            }
+
+            using (StreamWriter stream = new StreamWriter(rawFilePath, false, Encoding.UTF8))
+            {
+                stream.Write(output);
+            }
+
+            sheet.IsDirty = false;
         }
     }
 
