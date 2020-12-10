@@ -35,7 +35,7 @@ namespace ExcelMerge
             }
             else if (ext == ".tsv")
             {
-                return CsvReader.Read(path);
+                return TsvReader.Read(path);
             }
             else
             {
