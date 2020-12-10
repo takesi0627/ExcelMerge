@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using NPOI.SS.UserModel;
 using NetDiff;
 using SKCore.Collection;
+using NPOI.XSSF.UserModel;
 
 namespace ExcelMerge
 {
@@ -31,32 +32,6 @@ namespace ExcelMerge
 
             if (config.TrimLastBlankColumns)
                 TrimLastBlankColumns();
-        }
-
-        public static ExcelSheet Create(ISheet srcSheet, ExcelSheetReadConfig config)
-        {
-            var rows = ExcelReader.Read(srcSheet);
-
-            return CreateSheet(rows, config);
-        }
-
-        public static ExcelSheet CreateFromCsv(string path, ExcelSheetReadConfig config)
-        {
-            var rows = CsvReader.Read(path);
-
-            return CreateSheet(rows, config);
-        }
-
-        public static ExcelSheet CreateFromTsv(string path, ExcelSheetReadConfig config)
-        {
-            var rows = TsvReader.Read(path);
-
-            return CreateSheet(rows, config);
-        }
-
-        private static ExcelSheet CreateSheet(IEnumerable<ExcelRow> rows, ExcelSheetReadConfig config)
-        {
-            return new ExcelSheet(rows, config);
         }
 
         public void SetCell(int row, int col, string value)
@@ -182,7 +157,7 @@ namespace ExcelMerge
                 resultArray = indices.Where(i => i < resultArray.Length).Select(i => resultArray[i]).ToArray();
             }
 
-            var sheetDiff = new ExcelSheetDiff();
+            var sheetDiff = new ExcelSheetDiff(src, dst);
             DiffCells(resultArray, sheetDiff, columnStatusMap);
 
             return sheetDiff;
@@ -360,6 +335,24 @@ namespace ExcelMerge
 
                 columnIndex++;
             }
+        }
+    }
+
+    internal class XLSExcelSheet : ExcelSheet
+    {
+        private ISheet rawSheet;
+
+        public XLSExcelSheet(ISheet originalSheet, ExcelSheetReadConfig config) : base(ExcelReader.Read(originalSheet), config)
+        {
+            rawSheet = originalSheet;
+        }
+    }
+
+    internal class SVExcelSheet : ExcelSheet
+    {
+        public SVExcelSheet(string path, ExcelSheetReadConfig config) : base(ExcelReader.Read(path), config)
+        {
+
         }
     }
 }

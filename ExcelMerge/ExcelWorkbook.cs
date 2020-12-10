@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -66,15 +66,7 @@ namespace ExcelMerge
 
         internal SVWorkbook(string path, ExcelSheetReadConfig config) : base (path)
         {
-            var extension = Path.GetExtension(path);
-            if (extension == ".csv")
-                Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromCsv(path, config));
-            else if (extension == ".tsv")
-                Sheets.Add(Path.GetFileName(path), ExcelSheet.CreateFromTsv(path, config));
-            else
-            {
-                Debug.Assert(false, $"Invalid file type: {extension}");
-            }
+            Sheets.Add(Path.GetFileName(path), new SVExcelSheet(path, config));
         }
 
         public override void Dump(string sheetName, ExcelSheetDiff sheetDiff, bool isLeft)
@@ -97,7 +89,7 @@ namespace ExcelMerge
             for (int i = 0; i < rawWorkbook.NumberOfSheets; i++)
             {
                 var srcSheet = rawWorkbook.GetSheetAt(i);
-                Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
+                Sheets.Add(srcSheet.SheetName, new XLSExcelSheet(srcSheet, config));
             }
         }
 
