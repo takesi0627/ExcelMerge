@@ -372,19 +372,6 @@ namespace ExcelMerge.GUI.Views
             ExecuteDiff();
         }
 
-        private ExcelSheetReadConfig CreateReadConfig()
-        {
-            var setting = ((App)Application.Current).Setting;
-
-            return new ExcelSheetReadConfig()
-            {
-                TrimFirstBlankRows = setting.SkipFirstBlankRows,
-                TrimFirstBlankColumns = setting.SkipFirstBlankColumns,
-                TrimLastBlankRows = setting.TrimLastBlankRows,
-                TrimLastBlankColumns = setting.TrimLastBlankColumns,
-            };
-        }
-
         private Tuple<ExcelWorkbook, ExcelWorkbook> ReadWorkbooks()
         {
             ExcelWorkbook swb = null;
@@ -395,7 +382,7 @@ namespace ExcelMerge.GUI.Views
             {
                 progress.Report(Properties.Resources.Msg_ReadingFiles);
 
-                var config = CreateReadConfig();
+                var config = App.Instance.GetReadConfigSetting();
                 swb = ExcelWorkbook.Create(srcPath, config);
                 dwb = ExcelWorkbook.Create(dstPath, config);
             });

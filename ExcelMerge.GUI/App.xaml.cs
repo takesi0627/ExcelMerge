@@ -176,6 +176,17 @@ namespace ExcelMerge.GUI
             });
         }
 
+        public ExcelSheetReadConfig GetReadConfigSetting()
+        {
+            return new ExcelSheetReadConfig()
+            {
+                TrimFirstBlankRows = Setting.SkipFirstBlankRows,
+                TrimFirstBlankColumns = Setting.SkipFirstBlankColumns,
+                TrimLastBlankRows = Setting.TrimLastBlankRows,
+                TrimLastBlankColumns = Setting.TrimLastBlankColumns,
+            };
+        }
+
         public bool KeepFileHistory
         {
             get { return CommandLineOption.KeepFileHistory; }
