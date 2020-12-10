@@ -38,7 +38,8 @@ namespace ExcelMerge.GUI.Views
         private ExcelWorkbook LeftWorkbook;
         private ExcelWorkbook RightWorkbook;
 
-        private string SheetName;
+        private string srcSheetName;
+        private string dstSheetName;
         private ExcelSheetDiff SheetDiff;
 
         public DiffView()
@@ -437,6 +438,11 @@ namespace ExcelMerge.GUI.Views
             var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
             DataGridEventDispatcher.Instance.DispatchPreExecuteDiffEvent(args);
 
+            var srcPath = SrcPathTextBox.Text;
+            var dstPath = DstPathTextBox.Text;
+
+            Debug.Assert(Path.GetExtension(srcPath) == Path.GetExtension(dstPath), $"Compared files should have the same extension.");
+
             var workbooks = ReadWorkbooks();
             var srcWorkbook = workbooks.Item1;
             var dstWorkbook = workbooks.Item2;
@@ -446,12 +452,11 @@ namespace ExcelMerge.GUI.Views
             // SrcSheetCombobox.SelectedIndex = diffConfig.SrcSheetIndex;
             // DstSheetCombobox.SelectedIndex = diffConfig.DstSheetIndex;
 
-            SheetName = SrcSheetCombobox.SelectedItem.ToString();
+            srcSheetName = SrcSheetCombobox.SelectedItem.ToString();
+            dstSheetName = DstSheetCombobox.SelectedItem.ToString();
 
-            Debug.Assert(SheetName == DstSheetCombobox.SelectedItem.ToString());
-
-            var srcSheet = srcWorkbook.Sheets[SheetName];
-            var dstSheet = dstWorkbook.Sheets[SheetName];
+            var srcSheet = srcWorkbook.Sheets[srcSheetName];
+            var dstSheet = dstWorkbook.Sheets[dstSheetName];
 
             SourceSheet = srcSheet;
             DestSheet = dstSheet;
@@ -1083,8 +1088,8 @@ namespace ExcelMerge.GUI.Views
 
         public void SaveAll()
         {
-            LeftWorkbook.Dump(SheetName, SheetDiff, true);
-            RightWorkbook.Dump(SheetName, SheetDiff, false);
+            LeftWorkbook.Dump(srcSheetName, SheetDiff, true);
+            RightWorkbook.Dump(dstSheetName, SheetDiff, false);
             //LeftWorkbook.Dump();
             //RightWorkbook.Dump();
         }
@@ -1162,8 +1167,8 @@ namespace ExcelMerge.GUI.Views
         private void CopyColumn_Click(object sender, RoutedEventArgs e)
         {
             // 复制整列
-            LeftWorkbook.Dump(SheetName, SheetDiff, true);
-            RightWorkbook.Dump(SheetName, SheetDiff, false);
+            LeftWorkbook.Dump(srcSheetName, SheetDiff, true);
+            RightWorkbook.Dump(dstSheetName, SheetDiff, false);
         }
 
         private void CopyToAnother_Click(object sender, RoutedEventArgs e)
